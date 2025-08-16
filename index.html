@@ -1,266 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Elevate — BMR • TDEE • BMI • Body Comp</title>
-<link rel="icon" href="data:,">
-<style>
-  :root{ --green:#004d40; --gold:#fbc02d; --ink:#222; --muted:#666; }
-  *{box-sizing:border-box}
-  body{font-family:Inter, Arial, sans-serif;background:#f6f6f6;margin:0;padding:16px;color:var(--ink)}
-  .wrap{max-width:1024px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.08);overflow:hidden}
-  .head{background:linear-gradient(180deg,var(--green),#063c33);color:var(--gold);padding:20px;border-bottom:4px solid #002b25;text-align:center}
-  .head h1{margin:0;font-weight:800;letter-spacing:.2px}
-  .head .sub{color:#fff;opacity:.9;margin-top:6px}
-
-  /* Tabs */
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:#eef1ee;border-bottom:2px solid #ddd}
-  .tab{-webkit-tap-highlight-color:transparent;padding:10px 14px;background:#fff;color:#123;border:1px solid #d6d6d6;border-radius:999px;
-       font-weight:800;cursor:pointer;user-select:none;transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease}
-  .tab:hover{background:#fafafa}
-  .tab:active{transform:translateY(1px)}
-  .tab.active{background:var(--gold);color:#0a0a0a;border-color:var(--gold);box-shadow:0 10px 20px rgba(251,192,45,.25)}
-
-  /* Panels */
-  .sheet{display:none;padding:16px;opacity:0;transform:translateY(4px);transition:opacity .18s ease, transform .18s ease}
-  .sheet.active{display:block;opacity:1;transform:none}
-
-  .section{background:var(--green);color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
-
-  /* Excel-like grid */
-  .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:#e0e0e0;border:2px solid #bdbdbd;margin-bottom:16px}
-  .cell{background:#fff;border:1px solid #ddd;padding:10px;min-height:38px;display:flex;align-items:center;font-size:14px}
-  .headcell{background:var(--green);color:var(--gold);font-weight:800;justify-content:center}
-  .label{background:#c8e6c9;border-right:2px solid var(--green);font-weight:700}
-  .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
-  input,select{width:100%;border:none;background:transparent;font-size:14px;outline:none}
-
-  .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:4px}
-
-  @media(max-width:900px){ .grid{grid-template-columns:1fr 1fr} }
-  @media print{ .tabs{display:none!important} body{background:#fff} .wrap{box-shadow:none} .sheet{display:block!important} }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elevate — Fitness Calculators</title>
+  <style>
+    :root {
+      --green: #004d40;
+      --gold: #fbc02d;
+      --ink: #222;
+      --light: #f6f6f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: Arial, sans-serif;
+      background: var(--light);
+      color: var(--ink);
+    }
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(180deg, var(--green), #063c33);
+      color: var(--gold);
+      padding: 20px;
+      text-align: center;
+    }
+    .tabs {
+      display: flex; justify-content: center;
+      background: #eaeaea; flex-wrap: wrap;
+    }
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      margin: 4px;
+      border-radius: 30px;
+      font-weight: bold;
+      background: #fff;
+    }
+    .tab.active {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+    .sheet { display: none; padding: 20px; }
+    .sheet.active { display: block; }
+    .section {
+      background: var(--green);
+      color: var(--gold);
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .label {
+      background: #d9e2f3;
+      padding: 8px;
+      font-weight: bold;
+    }
+    .input {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    .input input, .input select {
+      width: 100%; border: none;
+      font-size: 14px;
+      outline: none;
+    }
+    .result {
+      background: #fff2cc;
+      font-weight: bold;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap" role="application" aria-label="Elevate Calculators">
-  <div class="head">
-    <h1>Elevate Calculators</h1>
-    <div class="sub">BMR • TDEE • BMI • Body Composition</div>
+  <div class="container">
+    <div class="header">
+      <h1>🏋️ Elevate Fitness Calculators</h1>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="bmr">BMR</div>
+      <div class="tab" data-tab="tdee">TDEE</div>
+      <div class="tab" data-tab="bmi">BMI</div>
+      <div class="tab" data-tab="bodycomp">Body Composition</div>
+    </div>
+
+    <!-- BMR -->
+    <div class="sheet active" id="bmr">
+      <div class="section">Basal Metabolic Rate</div>
+      <div class="grid">
+        <div class="label">Age</div>
+        <div class="input"><input type="number" id="age" min="10" max="100" value="30"></div>
+        <div class="label">Gender</div>
+        <div class="input">
+          <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="label">Height (cm)</div>
+        <div class="input"><input type="number" id="height" value="170"></div>
+        <div class="label">Weight (kg)</div>
+        <div class="input"><input type="number" id="weight" value="70"></div>
+        <div class="label">BMR Result</div>
+        <div class="result" id="bmrResult">0</div>
+      </div>
+    </div>
+
+    <!-- TDEE -->
+    <div class="sheet" id="tdee">
+      <div class="section">Total Daily Energy Expenditure</div>
+      <div class="grid">
+        <div class="label">Activity Level</div>
+        <div class="input">
+          <select id="activity">
+            <option value="1.2">Sedentary</option>
+            <option value="1.375">Light</option>
+            <option value="1.55">Moderate</option>
+            <option value="1.725">Active</option>
+            <option value="1.9">Very Active</option>
+          </select>
+        </div>
+        <div class="label">TDEE Result</div>
+        <div class="result" id="tdeeResult">0</div>
+      </div>
+    </div>
+
+    <!-- BMI -->
+    <div class="sheet" id="bmi">
+      <div class="section">Body Mass Index</div>
+      <div class="grid">
+        <div class="label">BMI Value</div>
+        <div class="result" id="bmiResult">0</div>
+        <div class="label">Category</div>
+        <div class="result" id="bmiCategory">--</div>
+      </div>
+    </div>
+
+    <!-- Body Composition -->
+    <div class="sheet" id="bodycomp">
+      <div class="section">Body Composition</div>
+      <div class="grid">
+        <div class="label">Body Fat %</div>
+        <div class="input"><input type="number" id="bodyFat" value="20"></div>
+        <div class="label">Lean Mass (kg)</div>
+        <div class="result" id="leanMass">0</div>
+        <div class="label">Fat Mass (kg)</div>
+        <div class="result" id="fatMass">0</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs" id="tabbar" role="tablist" aria-label="Calculator tabs">
-    <div class="tab active" data-sheet="tab-bmr" role="tab" aria-selected="true" tabindex="0">BMR</div>
-    <div class="tab" data-sheet="tab-tdee" role="tab" aria-selected="false" tabindex="-1">TDEE</div>
-    <div class="tab" data-sheet="tab-bmi" role="tab" aria-selected="false" tabindex="-1">BMI</div>
-    <div class="tab" data-sheet="tab-body" role="tab" aria-selected="false" tabindex="-1">Body Comp</div>
-  </div>
+  <script>
+    const ageEl = document.getElementById('age');
+    const genderEl = document.getElementById('gender');
+    const heightEl = document.getElementById('height');
+    const weightEl = document.getElementById('weight');
+    const bodyFatEl = document.getElementById('bodyFat');
+    const activityEl = document.getElementById('activity');
 
-  <!-- BMR TAB -->
-  <section id="tab-bmr" class="sheet active" role="tabpanel" aria-label="BMR">
-    <div class="section">BMR — Mifflin–St Jeor</div>
-    <div class="grid">
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
+    function calculateAll() {
+      const age = parseFloat(ageEl.value)||0;
+      const height = parseFloat(heightEl.value)||0;
+      const weight = parseFloat(weightEl.value)||0;
+      const gender = genderEl.value;
 
-      <div class="cell label">Age (years)</div><div class="cell"><input id="bmr_age" type="number" min="10" step="1" placeholder="e.g. 30"></div>
-      <div class="cell label">Gender</div><div class="cell">
-        <select id="bmr_gender"><option value="male">Male</option><option value="female">Female</option></select>
-      </div>
-
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number" step="0.1" placeholder="e.g. 175"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number" step="0.1" placeholder="e.g. 75.0"></div>
-
-      <div class="cell label">BMR Result</div><div class="cell result" id="bmr_out">0</div>
-      <div class="cell">Unit</div><div class="cell">cal/day</div>
-    </div>
-    <div class="hint">Tip: values are remembered and reused in other tabs automatically.</div>
-  </section>
-
-  <!-- TDEE TAB -->
-  <section id="tab-tdee" class="sheet" role="tabpanel" aria-label="TDEE">
-    <div class="section">TDEE — Daily Energy</div>
-    <div class="grid">
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-
-      <div class="cell label">Age (years)</div><div class="cell"><input id="tdee_age" type="number" min="10" step="1"></div>
-      <div class="cell label">Gender</div><div class="cell">
-        <select id="tdee_gender"><option value="male">Male</option><option value="female">Female</option></select>
-      </div>
-
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="tdee_height" type="number" step="0.1"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="tdee_weight" type="number" step="0.1"></div>
-
-      <div class="cell label">Activity</div><div class="cell">
-        <select id="tdee_activity">
-          <option value="1.2">Sedentary</option>
-          <option value="1.375">Light</option>
-          <option value="1.55" selected>Moderate</option>
-          <option value="1.725">Active</option>
-          <option value="1.9">Very Active</option>
-        </select>
-      </div>
-      <div class="cell label">Calorie Adjustment</div><div class="cell">
-        <select id="tdee_adjust">
-          <option value="-500">-500 (Cut)</option>
-          <option value="-300">-300</option>
-          <option value="-200">-200</option>
-          <option value="0" selected>0 (Maintain)</option>
-          <option value="200">+200</option>
-          <option value="300">+300</option>
-          <option value="500">+500 (Bulk)</option>
-        </select>
-      </div>
-
-      <div class="cell label">BMR (derived)</div><div class="cell result" id="tdee_bmr">0</div>
-      <div class="cell label">TDEE (BMR × Activity)</div><div class="cell result" id="tdee_out">0</div>
-
-      <div class="cell label">Target Calories</div><div class="cell result" id="tdee_target">0</div>
-      <div class="cell">Unit</div><div class="cell">cal/day</div>
-    </div>
-    <div class="hint">Change Adjustment to set deficit or surplus.</div>
-  </section>
-
-  <!-- BMI TAB -->
-  <section id="tab-bmi" class="sheet" role="tabpanel" aria-label="BMI">
-    <div class="section">BMI — Body Mass Index</div>
-    <div class="grid">
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmi_height" type="number" step="0.1"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmi_weight" type="number" step="0.1"></div>
-
-      <div class="cell label">BMI</div><div class="cell result" id="bmi_out">0</div>
-      <div class="cell label">Category</div><div class="cell result" id="bmi_cat">—</div>
-    </div>
-  </section>
-
-  <!-- BODY COMP TAB -->
-  <section id="tab-body" class="sheet" role="tabpanel" aria-label="Body Composition">
-    <div class="section">Body Composition</div>
-    <div class="grid">
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-      <div class="cell headcell">Input</div><div class="cell headcell">Value</div>
-
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bc_weight" type="number" step="0.1"></div>
-      <div class="cell label">Body Fat %</div><div class="cell"><input id="bc_bf" type="number" step="0.1" min="3" max="60"></div>
-
-      <div class="cell label">Lean Mass</div><div class="cell result" id="bc_lean">0</div>
-      <div class="cell label">Fat Mass</div><div class="cell result" id="bc_fat">0</div>
-    </div>
-  </section>
-</div>
-
-<script>
-(function(){
-  const $ = id => document.getElementById(id);
-  const N = v => (v === '' || v === null || v === undefined) ? 0 : (isFinite(+v) ? +v : 0);
-  const LS = 'elevate_calc_state_v1';
-
-  // ---- Tabs (click + hash init) ----
-  const tabbar = document.getElementById('tabbar');
-  const tabs = [...tabbar.querySelectorAll('.tab')];
-
-  function show(id){
-    document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
-    const p = document.getElementById(id);
-    if(p) p.classList.add('active');
-    tabs.forEach(t => {
-      const on = t.dataset.sheet === id;
-      t.classList.toggle('active', on);
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-      t.setAttribute('tabindex', on ? '0' : '-1');
-    });
-    if(location.hash !== '#'+id) history.replaceState(null,'','#'+id);
-  }
-
-  tabbar.addEventListener('click', e=>{
-    const t = e.target.closest('.tab'); if(!t) return; show(t.dataset.sheet);
-  });
-
-  const init = (location.hash||'#tab-bmr').slice(1);
-  show(document.getElementById(init) ? init : 'tab-bmr');
-
-  // ---- Persistence ----
-  function save(){
-    const data = {};
-    document.querySelectorAll('input,select').forEach(el=>{ if(el.id) data[el.id]=el.value; });
-    localStorage.setItem(LS, JSON.stringify(data));
-  }
-  function load(){
-    const data = JSON.parse(localStorage.getItem(LS) || '{}');
-    Object.keys(data).forEach(k=>{ const el = document.getElementById(k); if(el) el.value=data[k]; });
-  }
-
-  // ---- Shared field syncing (age, gender, height, weight) ----
-  const syncGroups = {
-    age: ['bmr_age','tdee_age'],
-    gender: ['bmr_gender','tdee_gender'],
-    height: ['bmr_height','tdee_height','bmi_height'],
-    weight: ['bmr_weight','tdee_weight','bmi_weight','bc_weight']
-  };
-  function syncField(changedId){
-    for(const key in syncGroups){
-      const group = syncGroups[key];
-      if(group.includes(changedId)){
-        const val = (document.getElementById(changedId)||{}).value;
-        group.forEach(id => { if(id !== changedId){ const el = document.getElementById(id); if(el && el.value !== val) el.value = val; } });
+      // BMR
+      let bmr = 0;
+      if(gender==="male"){
+        bmr = 88.362 + (13.397*weight) + (4.799*height) - (5.677*age);
+      } else {
+        bmr = 447.593 + (9.247*weight) + (3.098*height) - (4.330*age);
       }
+      document.getElementById('bmrResult').innerText = Math.round(bmr);
+
+      // TDEE
+      const activity = parseFloat(activityEl.value);
+      const tdee = bmr*activity;
+      document.getElementById('tdeeResult').innerText = Math.round(tdee);
+
+      // BMI
+      const bmi = weight / Math.pow(height/100,2);
+      document.getElementById('bmiResult').innerText = bmi.toFixed(1);
+      let cat="--";
+      if(bmi<18.5) cat="Underweight";
+      else if(bmi<25) cat="Normal";
+      else if(bmi<30) cat="Overweight";
+      else cat="Obese";
+      document.getElementById('bmiCategory').innerText=cat;
+
+      // Body Comp
+      const bf = parseFloat(bodyFatEl.value)||0;
+      const lean = weight*(1-bf/100);
+      const fat = weight*(bf/100);
+      document.getElementById('leanMass').innerText = lean.toFixed(1);
+      document.getElementById('fatMass').innerText = fat.toFixed(1);
     }
-  }
 
-  // ---- Calculations ----
-  function bmrCalc(age, gender, h, w){
-    if(!(age && h && w)) return 0;
-    return gender==='male'
-      ? 88.362 + 13.397*w + 4.799*h - 5.677*age
-      : 447.593 + 9.247*w + 3.098*h - 4.330*age;
-  }
+    [ageEl, genderEl, heightEl, weightEl, bodyFatEl, activityEl].forEach(el=>{
+      el.addEventListener('input', calculateAll);
+    });
+    calculateAll();
 
-  function recalc(){
-    // BMR tab
-    const bage=N($('bmr_age').value), bg=$('bmr_gender').value||'male', bh=N($('bmr_height').value), bw=N($('bmr_weight').value);
-    const bmr = Math.round(bmrCalc(bage, bg, bh, bw) || 0);
-    $('bmr_out').textContent = bmr;
-
-    // TDEE tab (falls back to BMR tab inputs if empty)
-    const tage=N($('tdee_age').value||bage), tg=$('tdee_gender').value||bg, th=N($('tdee_height').value||bh), tw=N($('tdee_weight').value||bw);
-    const ta=N($('tdee_activity').value||1), tadj=N($('tdee_adjust').value||0);
-    const tbmr = Math.round(bmrCalc(tage, tg, th, tw) || 0);
-    const tdee = Math.round(tbmr * ta);
-    const target = Math.max(0, tdee + tadj);
-    $('tdee_bmr').textContent = tbmr;
-    $('tdee_out').textContent = tdee;
-    $('tdee_target').textContent = target;
-
-    // BMI tab (falls back to TDEE/BMR inputs)
-    const bmih=N($('bmi_height').value||th||bh), bmiw=N($('bmi_weight').value||tw||bw);
-    const bmi = bmih ? (bmiw/Math.pow(bmih/100,2)) : 0;
-    $('bmi_out').textContent = bmi ? bmi.toFixed(1) : '0';
-    $('bmi_cat').textContent = bmi ? (bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese') : '—';
-
-    // Body comp (falls back to BMI/TDEE/BMR inputs)
-    const bcw=N($('bc_weight').value||bmiw||tw||bw), bf=N($('bc_bf').value||0);
-    const lean = bcw * (1 - (bf/100 || 0));
-    $('bc_lean').textContent = lean ? lean.toFixed(1) : '0';
-    $('bc_fat').textContent = (bcw - (lean||0)) ? (bcw - (lean||0)).toFixed(1) : '0';
-  }
-
-  // ---- Listeners ----
-  document.addEventListener('input', (e)=>{
-    if(!e.target.matches('input,select')) return;
-    syncField(e.target.id);
-    recalc();
-    save();
-  });
-
-  // Boot
-  load();
-  recalc();
-})();
-</script>
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
