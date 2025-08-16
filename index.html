@@ -1,179 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Elevate Tracker — Final</title>
-<link rel="icon" href="data:,">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<style>
-  :root{--green:#004d40;--gold:#fbc02d;--ink:#222;--muted:#666;--bg:#f6f6f6;--grid:#e0e0e0;--card:#fff;--line:#e6e6e6}
-  body{font-family:Inter,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
-  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.08);overflow:hidden}
-  .head{background:linear-gradient(180deg,var(--green),#063c33);color:var(--gold);padding:20px;text-align:center}
-  .head h1{margin:0;font-weight:800}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px;background:#eef1ee;border-bottom:2px solid #ddd}
-  .tab{padding:10px 14px;background:#fff;border:1px solid #d6d6d6;border-radius:999px;font-weight:800;cursor:pointer}
-  .tab.active{background:var(--gold);border-color:var(--gold)}
-  .sheet{display:none;padding:16px}
-  .sheet.active{display:block}
-  .section{background:var(--green);color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
-  .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #bdbdbd;margin-bottom:16px}
-  .cell{background:#fff;border:1px solid #ddd;padding:10px;min-height:38px;display:flex;align-items:center;font-size:14px}
-  .label{background:#c8e6c9;font-weight:700}
-  .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
-  input,select{width:100%;border:none;background:transparent;font-size:14px;outline:none}
-  .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0}
-  .calc-card{border:2px solid var(--gold);border-radius:8px;text-align:center;padding:14px;font-weight:800}
-  .calc-card .value{display:block;color:var(--green);font-size:28px;margin-top:6px}
-  table{width:100%;border-collapse:collapse}
-  th{background:var(--green);color:var(--gold);padding:10px}
-  td{border:1px solid #e6e6e6;padding:8px;text-align:center}
-  .macro-row{display:grid;grid-template-columns:140px 1fr 140px 1fr 140px 1fr;gap:10px;margin:10px 0}
-  .macro-row label{font-weight:700}
-  .macro-row input{border:1px solid #d6d6d6;border-radius:6px;padding:8px;background:#fff}
-  .summary-box{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:10px;text-align:center}
-  .summary-box .big{display:block;font-size:18px;font-weight:800;color:#004d40;margin-top:6px}
-  .weightlog{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin:10px 0}
-  .btn{padding:9px 14px;border:1px solid var(--green);background:#fff;border-radius:8px;font-weight:700;cursor:pointer}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevate Fitness Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    body {font-family: 'Calibri', Arial, sans-serif; background: #f5f5f5; padding: 20px;}
+    .excel-container {max-width: 1200px; margin: 0 auto; background: white; border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden;}
+    .excel-header {background: #2E75B6; color: white; padding: 20px; text-align: center;}
+    .excel-tabs {background: #E7E6E6; display: flex; border-bottom: 2px solid #ccc;}
+    .tab {padding: 12px 24px; background: #F2F2F2; border-right: 1px solid #ccc; cursor: pointer; font-weight: bold;}
+    .tab.active {background: white; border-bottom: 2px solid white;}
+    .sheet-content {display: none; padding: 20px;}
+    .sheet-content.active {display: block;}
+    .section-title {background: #4472C4; color: white; padding: 10px; font-weight: bold; text-align: center; margin: 20px 0; border-radius: 4px;}
+    .excel-grid {display: grid; grid-template-columns: 150px 200px 150px 200px 150px 200px; gap: 2px; background: #E0E0E0; border: 2px solid #A6A6A6; margin-bottom: 30px;}
+    .grid-cell {background: white; border: 1px solid #D4D4D4; padding: 8px; font-size: 11px; min-height: 25px; display: flex; align-items: center;}
+    .header-cell {background: #4472C4; color: white; font-weight: bold; text-align: center; justify-content: center;}
+    .label-cell {background: #D9E2F3; font-weight: bold; border-right: 2px solid #4472C4;}
+    .input-cell input, .input-cell select {width: 100%; border: none; background: transparent; font-size: 11px; padding: 2px;}
+    .formula-cell {background: #E2EFDA; font-weight: bold; color: #0D5F0D;}
+    .result-cell {background: #FFF2CC; font-weight: bold; color: #7F6000; text-align: center; justify-content: center;}
+    .chart-container {background: white; padding: 20px; margin: 20px 0; border: 1px solid #D4D4D4; border-radius: 4px;}
+    .export-buttons {padding: 20px; text-align: center;}
+    .excel-button {background: #217346; color: white; border: none; padding: 12px 24px; margin: 0 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;}
+    .excel-button:hover {background: #1B5E20;}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="head"><h1>Elevate Tracker</h1></div>
-  <div class="tabs" id="tabs">
-    <div class="tab active" data-sheet="bmr">BMR</div>
-    <div class="tab" data-sheet="bmi">BMI</div>
-    <div class="tab" data-sheet="bodycomp">Body Comp</div>
-    <div class="tab" data-sheet="macros">Macros</div>
-    <div class="tab" data-sheet="meas">Measurements</div>
-    <div class="tab" data-sheet="prog">Progress</div>
+  <div class="excel-container">
+    <div class="excel-header">
+      <h1>🏋️ Elevate Fitness Tracker</h1>
+      <p>Professional Excel-Style Client Management System</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="excel-tabs">
+      <div class="tab active" onclick="switchTab('bmr')">BMR</div>
+      <div class="tab" onclick="switchTab('tdee')">TDEE</div>
+      <div class="tab" onclick="switchTab('bmi')">BMI</div>
+      <div class="tab" onclick="switchTab('macros')">Macros</div>
+      <div class="tab" onclick="switchTab('progress')">Progress</div>
+    </div>
+
+    <!-- BMR TAB -->
+    <div id="bmr" class="sheet-content active">
+      <div class="section-title">🔥 Metabolic Calculations</div>
+      <div class="excel-grid">
+        <div class="grid-cell header-cell">CALCULATION</div>
+        <div class="grid-cell header-cell">RESULT</div>
+        <div class="grid-cell header-cell">UNIT</div>
+        <div class="grid-cell label-cell">BMR</div>
+        <div class="grid-cell result-cell" id="bmrResult">0</div>
+        <div class="grid-cell">kcal/day</div>
+      </div>
+    </div>
+
+    <!-- TDEE TAB -->
+    <div id="tdee" class="sheet-content">
+      <div class="section-title">🔥 Total Daily Energy</div>
+      <div class="excel-grid">
+        <div class="grid-cell header-cell">CALCULATION</div>
+        <div class="grid-cell header-cell">RESULT</div>
+        <div class="grid-cell header-cell">UNIT</div>
+        <div class="grid-cell label-cell">TDEE</div>
+        <div class="grid-cell result-cell" id="tdeeResult">0</div>
+        <div class="grid-cell">kcal/day</div>
+      </div>
+    </div>
+
+    <!-- BMI TAB -->
+    <div id="bmi" class="sheet-content">
+      <div class="section-title">🔥 Body Mass Index</div>
+      <div class="excel-grid">
+        <div class="grid-cell header-cell">CALCULATION</div>
+        <div class="grid-cell header-cell">RESULT</div>
+        <div class="grid-cell header-cell">UNIT</div>
+        <div class="grid-cell label-cell">BMI</div>
+        <div class="grid-cell result-cell" id="bmiResult">0</div>
+        <div class="grid-cell">kg/m²</div>
+      </div>
+    </div>
+
+    <!-- MACROS TAB -->
+    <div id="macros" class="sheet-content">
+      <div class="section-title">Macro Nutrient Planning</div>
+      <div class="excel-grid">
+        <div class="grid-cell header-cell">MACRO</div>
+        <div class="grid-cell header-cell">PERCENT</div>
+        <div class="grid-cell header-cell">GRAMS</div>
+        <div class="grid-cell label-cell">Protein</div>
+        <div class="grid-cell input-cell"><input type="number" id="proteinPercent" value="30" min="15" max="50" onchange="updateMacros()">%</div>
+        <div class="grid-cell result-cell" id="proteinGrams">0</div>
+        <div class="grid-cell label-cell">Carbs</div>
+        <div class="grid-cell input-cell"><input type="number" id="carbPercent" value="40" min="20" max="65" onchange="updateMacros()">%</div>
+        <div class="grid-cell result-cell" id="carbGrams">0</div>
+        <div class="grid-cell label-cell">Fats</div>
+        <div class="grid-cell input-cell"><input type="number" id="fatPercent" value="30" min="15" max="50" onchange="updateMacros()">%</div>
+        <div class="grid-cell result-cell" id="fatGrams">0</div>
+      </div>
+      <div class="chart-container">
+        <canvas id="macroChart"></canvas>
+      </div>
+    </div>
+
+    <!-- PROGRESS TAB -->
+    <div id="progress" class="sheet-content">
+      <div class="section-title">Progress Tracking (Weight Only)</div>
+      <input type="number" id="weightInput" placeholder="Enter weight (kg)">
+      <button onclick="saveWeight()">Save</button>
+      <table class="excel-grid">
+        <div id="weightHistory"></div>
+      </table>
+      <div class="chart-container">
+        <canvas id="weightChart"></canvas>
+      </div>
+    </div>
+
+    <!-- EXPORT BUTTON -->
+    <div class="export-buttons">
+      <button class="excel-button" onclick="exportData()">📧 Export & Email</button>
+    </div>
   </div>
 
-  <!-- BMR -->
-  <section id="bmr" class="sheet active">
-    <div class="section">BMR + TDEE</div>
-    <div class="grid">
-      <div class="cell label">Age</div><div class="cell"><input id="bmr_age" type="number"></div>
-      <div class="cell label">Gender</div><div class="cell"><select id="bmr_gender"><option value="male">Male</option><option value="female">Female</option></select></div>
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number"></div>
-      <div class="cell label">Activity</div><div class="cell"><select id="bmr_activity"><option value="1.2">Sedentary</option><option value="1.375">Light</option><option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option></select></div>
-      <div class="cell label">Adjustment</div><div class="cell"><select id="bmr_adjust"><option value="-500">-500 (Cut)</option><option value="0" selected>0</option><option value="500">+500 (Bulk)</option></select></div>
-      <div class="cell label">BMR</div><div class="cell result" id="bmr_out">0</div>
-      <div class="cell label">TDEE</div><div class="cell result" id="bmr_tdee">0</div>
-      <div class="cell label">Target</div><div class="cell result" id="bmr_target">0</div>
-    </div>
-    <div class="cards">
-      <div class="calc-card">🔥 BMR <span class="value" id="mc_bmr">0</span></div>
-      <div class="calc-card">🔥 TDEE <span class="value" id="mc_tdee">0</span></div>
-      <div class="calc-card">🔥 Target <span class="value" id="mc_target">0</span></div>
-    </div>
-  </section>
-
-  <!-- BMI -->
-  <section id="bmi" class="sheet">
-    <div class="section">BMI</div>
-    <div class="grid">
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmi_height" type="number"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmi_weight" type="number"></div>
-      <div class="cell label">BMI</div><div class="cell result" id="bmi_out">0</div>
-      <div class="cell label">Category</div><div class="cell result" id="bmi_cat">—</div>
-    </div>
-  </section>
-
-  <!-- Body Comp -->
-  <section id="bodycomp" class="sheet">
-    <div class="section">Body Composition</div>
-    <div class="grid">
-      <div class="cell label">Weight</div><div class="cell"><input id="bc_weight" type="number"></div>
-      <div class="cell label">Body Fat %</div><div class="cell"><input id="bc_bf" type="number"></div>
-      <div class="cell label">Lean Mass</div><div class="cell result" id="bc_lean">0</div>
-      <div class="cell label">Fat Mass</div><div class="cell result" id="bc_fat">0</div>
-    </div>
-  </section>
-
-  <!-- Macros -->
-  <section id="macros" class="sheet">
-    <div class="section">Macros</div>
-    <div class="macro-row">
-      <label>Protein %</label><input id="pPct" type="number" value="30">
-      <label>Fat %</label><input id="fPct" type="number" value="30">
-      <label>Carbs %</label><input id="cPct" type="number" value="40" readonly>
-    </div>
-    <div class="summary-box">Protein <span class="big" id="pGr">0g</span></div>
-    <div class="summary-box">Carbs <span class="big" id="cGr">0g</span></div>
-    <div class="summary-box">Fat <span class="big" id="fGr">0g</span></div>
-    <canvas id="macroChart" style="max-height:300px"></canvas>
-  </section>
-
-  <!-- Measurements -->
-  <section id="meas" class="sheet">
-    <div class="section">Measurements</div>
-    <table>
-      <tr><th>Metric</th><th>W1</th><th>W12</th><th>Change</th></tr>
-      <tr><td>Weight</td><td><input id="w1"></td><td><input id="w12"></td><td id="wch">0</td></tr>
-    </table>
-  </section>
-
-  <!-- Progress -->
-  <section id="prog" class="sheet">
-    <div class="section">Progress</div>
-    <div class="weightlog">
-      <input id="logDate" type="date"><input id="logWeight" type="number" placeholder="kg">
-      <button class="btn" id="addLog">Add</button>
-    </div>
-    <table id="logTable"><tr><th>Date</th><th>Weight</th></tr></table>
-    <canvas id="progChart" style="max-height:300px"></canvas>
-  </section>
-</div>
 <script>
-// Tabs
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.sheet').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');document.getElementById(t.dataset.sheet).classList.add('active');
-}));
-// BMR
-function calcBMR(){
- let a=+bmr_age.value||0,h=+bmr_height.value||0,w=+bmr_weight.value||0;
- let g=bmr_gender.value,m;if(g=="male")m=10*w+6.25*h-5*a+5;else m=10*w+6.25*h-5*a-161;
- let tdee=m*(+bmr_activity.value||1),tar=tdee+(+bmr_adjust.value||0);
- bmr_out.textContent=Math.round(m);bmr_tdee.textContent=Math.round(tdee);bmr_target.textContent=Math.round(tar);
- mc_bmr.textContent=Math.round(m);mc_tdee.textContent=Math.round(tdee);mc_target.textContent=Math.round(tar);
- localStorage.setItem("targetCals",tar);
+function switchTab(tabId){
+  document.querySelectorAll(".sheet-content").forEach(el=>el.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(el=>el.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+  event.target.classList.add("active");
 }
-document.querySelectorAll('#bmr input,#bmr select').forEach(e=>e.addEventListener('input',calcBMR));
-// BMI
-function calcBMI(){
- let h=+bmi_height.value/100,w=+bmi_weight.value;let bmi=w/(h*h);
- bmi_out.textContent=(bmi?bmi.toFixed(1):0);
- bmi_cat.textContent=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
-}
-document.querySelectorAll('#bmi input').forEach(e=>e.addEventListener('input',calcBMI));
-// Body Comp
-function calcBC(){
- let w=+bc_weight.value,bf=+bc_bf.value/100;bc_lean.textContent=(w*(1-bf)).toFixed(1);bc_fat.textContent=(w*bf).toFixed(1);
-}
-document.querySelectorAll('#bodycomp input').forEach(e=>e.addEventListener('input',calcBC));
-// Macros
-let macroChart=new Chart(macroChart.getContext('2d'),{type:'pie',data:{labels:["Protein","Carbs","Fat"],datasets:[{data:[30,40,30],backgroundColor:["#4caf50","#2196f3","#ff9800"]}]},options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.label+": "+c.formattedValue+"%"}}}}});
+
+// Macro Chart
+let macroChart = new Chart(document.getElementById("macroChart"), {
+  type: "pie",
+  data: {labels:["Protein","Carbs","Fats"], datasets:[{data:[30,40,30], backgroundColor:["#4caf50","#2196f3","#ff9800"]}]},
+  options: {plugins:{legend:{position:"bottom"}}}
+});
 function updateMacros(){
- let p=+pPct.value||0,f=+fPct.value||0,c=100-p-f;if(c<0)c=0;cPct.value=c;
- let t=+localStorage.getItem("targetCals")||2000;
- let pcals=t*p/100,fcals=t*f/100,ccals=t*c/100;
- pGr.textContent=Math.round(pcals/4)+"g";cGr.textContent=Math.round(ccals/4)+"g";fGr.textContent=Math.round(fcals/9)+"g";
- macroChart.data.datasets[0].data=[p,c,f];macroChart.update();
+  let p = parseInt(document.getElementById("proteinPercent").value)||0;
+  let c = parseInt(document.getElementById("carbPercent").value)||0;
+  let f = parseInt(document.getElementById("fatPercent").value)||0;
+  let total = p+c+f;
+  if(total!==100){ f = 100-(p+c); document.getElementById("fatPercent").value=f; }
+  macroChart.data.datasets[0].data=[p,c,f];
+  macroChart.update();
 }
-document.querySelectorAll('#macros input').forEach(e=>e.addEventListener('input',updateMacros));
-// Measurements
-function meas(){wch.textContent=(w12.value-w1.value).toFixed(1);}
-w1.oninput=w12.oninput=meas;
-// Progress
-let progChart=new Chart(progChart.getContext('2d'),{type:'line',data:{labels:[],datasets:[{label:"Weight",data:[],borderColor:"#4caf50"}]}});
-function renderLogs(){let logs=JSON.parse(localStorage.getItem("logs")||"[]");logTable.innerHTML="<tr><th>Date</th><th>Weight</th></tr>";logs.forEach(l=>{logTable.innerHTML+=`<tr><td>${l.d}</td><td>${l.w}</td></tr>`});progChart.data.labels=logs.map(l=>l.d);progChart.data.datasets[0].data=logs.map(l=>l.w);progChart.update();}
-addLog.onclick=()=>{let d=logDate.value,w=+logWeight.value;if(!d||!w)return;let logs=JSON.parse(localStorage.getItem("logs")||"[]");logs.push({d,w});localStorage.setItem("logs",JSON.stringify(logs));renderLogs();};
-renderLogs();
+
+// Weight Log
+let weightLog = JSON.parse(localStorage.getItem("weightLog"))||[];
+let weightChart = new Chart(document.getElementById("weightChart"), {
+  type:"line", data:{labels:weightLog.map(e=>e.date), datasets:[{label:"Weight (kg)", data:weightLog.map(e=>e.weight), borderColor:"#2E75B6"}]}
+});
+function saveWeight(){
+  let w = document.getElementById("weightInput").value;
+  if(!w) return;
+  let entry={date:new Date().toLocaleDateString(), weight:w};
+  weightLog.push(entry);
+  localStorage.setItem("weightLog",JSON.stringify(weightLog));
+  renderHistory();
+  weightChart.data.labels.push(entry.date);
+  weightChart.data.datasets[0].data.push(w);
+  weightChart.update();
+}
+function renderHistory(){
+  document.getElementById("weightHistory").innerHTML=weightLog.map(e=>`<div>${e.date}: ${e.weight} kg</div>`).join("");
+}
+renderHistory();
+
+// Export Data
+function exportData() {
+  let summary = "Elevate Tracker Export\n\n";
+  summary += "BMR: "+document.getElementById("bmrResult").innerText+" kcal\n";
+  summary += "TDEE: "+document.getElementById("tdeeResult").innerText+" kcal\n";
+  summary += "BMI: "+document.getElementById("bmiResult").innerText+"\n\n";
+  summary += "Protein: "+document.getElementById("proteinGrams").innerText+" g\n";
+  summary += "Carbs: "+document.getElementById("carbGrams").innerText+" g\n";
+  summary += "Fats: "+document.getElementById("fatGrams").innerText+" g\n\n";
+  summary += "Weight Log:\n";
+  weightLog.forEach(e=>summary+=e.date+" — "+e.weight+" kg\n");
+  let subject = encodeURIComponent("Elevate Tracker Export");
+  let body = encodeURIComponent(summary);
+  window.location.href="mailto:?subject="+subject+"&body="+body;
+}
 </script>
 </body>
 </html>
