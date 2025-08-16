@@ -3,603 +3,177 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Elevate Tracker — BMR • BMI • Body Comp • Macros • Measurements • Progress</title>
+<title>Elevate Tracker — Final</title>
 <link rel="icon" href="data:,">
-<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
-  :root{
-    --green:#004d40; --gold:#fbc02d; --ink:#222; --muted:#666;
-    --bg:#f6f6f6; --grid:#e0e0e0; --card:#ffffff; --line:#e6e6e6;
-  }
-  *{box-sizing:border-box}
+  :root{--green:#004d40;--gold:#fbc02d;--ink:#222;--muted:#666;--bg:#f6f6f6;--grid:#e0e0e0;--card:#fff;--line:#e6e6e6}
   body{font-family:Inter,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
   .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.08);overflow:hidden}
-  .head{background:linear-gradient(180deg,var(--green),#063c33);color:var(--gold);padding:20px 16px;border-bottom:4px solid #002b25;text-align:center}
+  .head{background:linear-gradient(180deg,var(--green),#063c33);color:var(--gold);padding:20px;text-align:center}
   .head h1{margin:0;font-weight:800}
-  .head .sub{color:#fff;opacity:.9;margin-top:6px}
-
-  /* Tabs */
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:#eef1ee;border-bottom:2px solid #ddd}
-  .tab{-webkit-tap-highlight-color:transparent;padding:10px 14px;background:#fff;color:#123;border:1px solid #d6d6d6;border-radius:999px;
-       font-weight:800;cursor:pointer;user-select:none;transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease}
-  .tab:hover{background:#fafafa}
-  .tab:active{transform:translateY(1px)}
-  .tab.active{background:var(--gold);color:#0a0a0a;border-color:var(--gold);box-shadow:0 10px 20px rgba(251,192,45,.25)}
-
-  /* Panels */
-  .sheet{display:none;padding:16px;opacity:0;transform:translateY(4px);transition:opacity .18s ease, transform .18s ease}
-  .sheet.active{display:block;opacity:1;transform:none}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px;background:#eef1ee;border-bottom:2px solid #ddd}
+  .tab{padding:10px 14px;background:#fff;border:1px solid #d6d6d6;border-radius:999px;font-weight:800;cursor:pointer}
+  .tab.active{background:var(--gold);border-color:var(--gold)}
+  .sheet{display:none;padding:16px}
+  .sheet.active{display:block}
   .section{background:var(--green);color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
-
-  /* Excel-like grid */
   .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #bdbdbd;margin-bottom:16px}
   .cell{background:#fff;border:1px solid #ddd;padding:10px;min-height:38px;display:flex;align-items:center;font-size:14px}
-  .label{background:#c8e6c9;border-right:2px solid var(--green);font-weight:700}
+  .label{background:#c8e6c9;font-weight:700}
   .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
   input,select{width:100%;border:none;background:transparent;font-size:14px;outline:none}
-
-  /* Cards / layout helpers */
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
   .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0}
   .calc-card{border:2px solid var(--gold);border-radius:8px;text-align:center;padding:14px;font-weight:800}
   .calc-card .value{display:block;color:var(--green);font-size:28px;margin-top:6px}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .tight{max-width:940px;margin:0 auto}
-
   table{width:100%;border-collapse:collapse}
   th{background:var(--green);color:var(--gold);padding:10px}
   td{border:1px solid #e6e6e6;padding:8px;text-align:center}
-
-  .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:4px}
-  .foot{padding:10px;text-align:center;color:#666;border-top:1px solid #eee;font-size:12px;background:#fafafa}
-
-  /* Macros: cleaner inputs row */
   .macro-row{display:grid;grid-template-columns:140px 1fr 140px 1fr 140px 1fr;gap:10px;margin:10px 0}
-  .macro-row label{display:flex;align-items:center;font-weight:700}
+  .macro-row label{font-weight:700}
   .macro-row input{border:1px solid #d6d6d6;border-radius:6px;padding:8px;background:#fff}
-  .macro-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
   .summary-box{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:10px;text-align:center}
   .summary-box .big{display:block;font-size:18px;font-weight:800;color:#004d40;margin-top:6px}
-  .macro-note{font-size:12px;color:#555;margin-top:6px;text-align:center}
-
-  @media(max-width:1100px){ .grid{grid-template-columns:1fr 1fr} .cards{grid-template-columns:1fr} .two{grid-template-columns:1fr}
-    .macro-row{grid-template-columns:1fr 1fr} .macro-summary{grid-template-columns:1fr} }
-  @media print{ .tabs{display:none!important} body{background:#fff} .wrap{box-shadow:none} .sheet{display:block!important} }
+  .weightlog{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin:10px 0}
+  .btn{padding:9px 14px;border:1px solid var(--green);background:#fff;border-radius:8px;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="wrap" role="application" aria-label="Elevate Tracker">
-  <div class="head">
-    <h1>Elevate Tracker</h1>
-    <div class="sub">BMR • BMI • Body Composition • Macros • Measurements • Progress</div>
-  </div>
-
-  <!-- Tabs (TDEE tab removed by request) -->
-  <div class="tabs" id="tabbar" role="tablist" aria-label="Tracker Tabs">
-    <div class="tab active" data-sheet="bmr" role="tab" aria-selected="true" tabindex="0">BMR</div>
-    <div class="tab" data-sheet="bmi" role="tab" aria-selected="false" tabindex="-1">BMI</div>
-    <div class="tab" data-sheet="bodycomp" role="tab" aria-selected="false" tabindex="-1">Body Comp</div>
-    <div class="tab" data-sheet="macros" role="tab" aria-selected="false" tabindex="-1">Macros</div>
-    <div class="tab" data-sheet="meas" role="tab" aria-selected="false" tabindex="-1">Measurements</div>
-    <div class="tab" data-sheet="prog" role="tab" aria-selected="false" tabindex="-1">Progress</div>
+<div class="wrap">
+  <div class="head"><h1>Elevate Tracker</h1></div>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-sheet="bmr">BMR</div>
+    <div class="tab" data-sheet="bmi">BMI</div>
+    <div class="tab" data-sheet="bodycomp">Body Comp</div>
+    <div class="tab" data-sheet="macros">Macros</div>
+    <div class="tab" data-sheet="meas">Measurements</div>
+    <div class="tab" data-sheet="prog">Progress</div>
   </div>
 
   <!-- BMR -->
-  <section id="bmr" class="sheet active tight" role="tabpanel" aria-label="BMR">
-    <div class="section">Basal Metabolic Rate (Mifflin–St Jeor)</div>
-
-    <!-- Clean grid: removed “Input/Value” headers -->
+  <section id="bmr" class="sheet active">
+    <div class="section">BMR + TDEE</div>
     <div class="grid">
-      <div class="cell label">Age (years)</div><div class="cell"><input id="bmr_age" type="number" min="10" step="1" placeholder="30"></div>
-      <div class="cell label">Gender</div><div class="cell">
-        <select id="bmr_gender"><option value="male">Male</option><option value="female">Female</option></select>
-      </div>
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number" step="0.1" placeholder="175"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number" step="0.1" placeholder="75.0"></div>
-
-      <!-- NEW on BMR page -->
-      <div class="cell label">Activity Level</div>
-      <div class="cell">
-        <select id="bmr_activity">
-          <option value="1.2">Sedentary</option>
-          <option value="1.375">Light</option>
-          <option value="1.55" selected>Moderate</option>
-          <option value="1.725">Active</option>
-          <option value="1.9">Very Active</option>
-        </select>
-      </div>
-
-      <div class="cell label">Calorie Adjustment</div>
-      <div class="cell">
-        <select id="bmr_adjust">
-          <option value="-500">-500 (Cut)</option>
-          <option value="-300">-300</option>
-          <option value="-200">-200</option>
-          <option value="0" selected>0 (Maintain)</option>
-          <option value="200">+200</option>
-          <option value="300">+300</option>
-          <option value="500">+500 (Bulk)</option>
-        </select>
-      </div>
-
-      <div class="cell label">BMR Result</div><div class="cell result" id="bmr_out">0</div>
-      <div class="cell label">TDEE (BMR × Activity)</div><div class="cell result" id="bmr_tdee">0</div>
-      <div class="cell label">Target Calories</div><div class="cell result" id="bmr_target">0</div>
+      <div class="cell label">Age</div><div class="cell"><input id="bmr_age" type="number"></div>
+      <div class="cell label">Gender</div><div class="cell"><select id="bmr_gender"><option value="male">Male</option><option value="female">Female</option></select></div>
+      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number"></div>
+      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number"></div>
+      <div class="cell label">Activity</div><div class="cell"><select id="bmr_activity"><option value="1.2">Sedentary</option><option value="1.375">Light</option><option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option></select></div>
+      <div class="cell label">Adjustment</div><div class="cell"><select id="bmr_adjust"><option value="-500">-500 (Cut)</option><option value="0" selected>0</option><option value="500">+500 (Bulk)</option></select></div>
+      <div class="cell label">BMR</div><div class="cell result" id="bmr_out">0</div>
+      <div class="cell label">TDEE</div><div class="cell result" id="bmr_tdee">0</div>
+      <div class="cell label">Target</div><div class="cell result" id="bmr_target">0</div>
     </div>
-
-    <!-- 🔥 Metabolic Calculations inline (kept simple/inline per request) -->
     <div class="cards">
-      <div class="calc-card">🔥 BMR <span class="value" id="mc_bmr">0</span>cal/day</div>
-      <div class="calc-card">🔥 TDEE <span class="value" id="mc_tdee">0</span>cal/day</div>
-      <div class="calc-card">🔥 Target Calories <span class="value" id="mc_target">0</span>cal/day</div>
+      <div class="calc-card">🔥 BMR <span class="value" id="mc_bmr">0</span></div>
+      <div class="calc-card">🔥 TDEE <span class="value" id="mc_tdee">0</span></div>
+      <div class="calc-card">🔥 Target <span class="value" id="mc_target">0</span></div>
     </div>
   </section>
 
   <!-- BMI -->
-  <section id="bmi" class="sheet tight" role="tabpanel" aria-label="BMI">
-    <div class="section">Body Mass Index</div>
+  <section id="bmi" class="sheet">
+    <div class="section">BMI</div>
     <div class="grid">
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmi_height" type="number" step="0.1"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmi_weight" type="number" step="0.1"></div>
+      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmi_height" type="number"></div>
+      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmi_weight" type="number"></div>
       <div class="cell label">BMI</div><div class="cell result" id="bmi_out">0</div>
       <div class="cell label">Category</div><div class="cell result" id="bmi_cat">—</div>
     </div>
   </section>
 
   <!-- Body Comp -->
-  <section id="bodycomp" class="sheet tight" role="tabpanel" aria-label="Body Composition">
+  <section id="bodycomp" class="sheet">
     <div class="section">Body Composition</div>
     <div class="grid">
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bc_weight" type="number" step="0.1"></div>
-      <div class="cell label">Body Fat %</div><div class="cell"><input id="bc_bf" type="number" step="0.1" min="3" max="60"></div>
+      <div class="cell label">Weight</div><div class="cell"><input id="bc_weight" type="number"></div>
+      <div class="cell label">Body Fat %</div><div class="cell"><input id="bc_bf" type="number"></div>
       <div class="cell label">Lean Mass</div><div class="cell result" id="bc_lean">0</div>
       <div class="cell label">Fat Mass</div><div class="cell result" id="bc_fat">0</div>
     </div>
   </section>
 
-  <!-- MACROS -->
-  <section id="macros" class="sheet tight" role="tabpanel" aria-label="Macros">
-    <div class="section">Macro Planning</div>
-
-    <!-- Cleaner input row (Option B auto-100%) -->
+  <!-- Macros -->
+  <section id="macros" class="sheet">
+    <div class="section">Macros</div>
     <div class="macro-row">
-      <label for="pPct">Protein %</label>
-      <input id="pPct" type="number" value="30" min="0" max="100" />
-      <label for="fPct">Fat %</label>
-      <input id="fPct" type="number" value="30" min="0" max="100" />
-      <label for="cPct">Carbs %</label>
-      <input id="cPct" type="number" value="40" min="0" max="100" readonly />
+      <label>Protein %</label><input id="pPct" type="number" value="30">
+      <label>Fat %</label><input id="fPct" type="number" value="30">
+      <label>Carbs %</label><input id="cPct" type="number" value="40" readonly>
     </div>
-    <div class="macro-note">Edit <strong>Protein</strong> and <strong>Fat</strong>. <strong>Carbs</strong> auto-fills so total = 100%.</div>
-
-    <!-- Summary numbers -->
-    <div class="macro-summary">
-      <div class="summary-box">
-        Protein (kcal / g)
-        <span class="big"><span id="pCals">0</span> / <span id="pGr">0</span>g</span>
-      </div>
-      <div class="summary-box">
-        Carbs (kcal / g)
-        <span class="big"><span id="cCals">0</span> / <span id="cGr">0</span>g</span>
-      </div>
-      <div class="summary-box">
-        Fat (kcal / g)
-        <span class="big"><span id="fCals">0</span> / <span id="fGr">0</span>g</span>
-      </div>
-    </div>
-
-    <div class="two" style="margin-top:14px">
-      <div class="card"><canvas id="macroChart" style="max-height:340px"></canvas></div>
-      <div class="card">
-        <div class="section" style="margin-top:0">Meal Timing</div>
-        <table>
-          <tr><th>Meal</th><th>Protein (g)</th><th>Carbs (g)</th><th>Fat (g)</th><th>Calories</th></tr>
-          <tr><td>Breakfast</td><td id="m1P">0</td><td id="m1C">0</td><td id="m1F">0</td><td id="m1K">0</td></tr>
-          <tr><td>Lunch</td><td id="m2P">0</td><td id="m2C">0</td><td id="m2F">0</td><td id="m2K">0</td></tr>
-          <tr><td>Dinner</td><td id="m3P">0</td><td id="m3C">0</td><td id="m3F">0</td><td id="m3K">0</td></tr>
-          <tr><td>Snacks</td><td id="sP">0</td><td id="sC">0</td><td id="sF">0</td><td id="sK">0</td></tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:12px"><canvas id="mealChart" style="max-height:300px"></canvas></div>
+    <div class="summary-box">Protein <span class="big" id="pGr">0g</span></div>
+    <div class="summary-box">Carbs <span class="big" id="cGr">0g</span></div>
+    <div class="summary-box">Fat <span class="big" id="fGr">0g</span></div>
+    <canvas id="macroChart" style="max-height:300px"></canvas>
   </section>
 
-  <!-- MEASUREMENTS -->
-  <section id="meas" class="sheet tight" role="tabpanel" aria-label="Measurements">
-    <div class="section">Body Measurements</div>
-    <div class="card">
-      <table>
-        <tr><th>Measurement</th><th>W1</th><th>W4</th><th>W8</th><th>W12</th><th>Change</th></tr>
-        <tr>
-          <td>Weight (kg)</td>
-          <td><input id="weight1" type="number" step="0.1"></td>
-          <td><input id="weight4" type="number" step="0.1"></td>
-          <td><input id="weight8" type="number" step="0.1"></td>
-          <td><input id="weight12" type="number" step="0.1"></td>
-          <td id="weightChange">0 kg</td>
-        </tr>
-        <tr>
-          <td>Body Fat %</td>
-          <td><input id="bf1" type="number" step="0.1"></td>
-          <td><input id="bf4" type="number" step="0.1"></td>
-          <td><input id="bf8" type="number" step="0.1"></td>
-          <td><input id="bf12" type="number" step="0.1"></td>
-          <td id="bfChange">0%</td>
-        </tr>
-        <tr>
-          <td>Waist (cm)</td>
-          <td><input id="waist1" type="number" step="0.1"></td>
-          <td><input id="waist4" type="number" step="0.1"></td>
-          <td><input id="waist8" type="number" step="0.1"></td>
-          <td><input id="waist12" type="number" step="0.1"></td>
-          <td id="waistChange">0 cm</td>
-        </tr>
-      </table>
-    </div>
+  <!-- Measurements -->
+  <section id="meas" class="sheet">
+    <div class="section">Measurements</div>
+    <table>
+      <tr><th>Metric</th><th>W1</th><th>W12</th><th>Change</th></tr>
+      <tr><td>Weight</td><td><input id="w1"></td><td><input id="w12"></td><td id="wch">0</td></tr>
+    </table>
   </section>
 
-  <!-- PROGRESS -->
-  <section id="prog" class="sheet tight" role="tabpanel" aria-label="Progress">
+  <!-- Progress -->
+  <section id="prog" class="sheet">
     <div class="section">Progress</div>
-    <div class="card">
-      <table>
-        <tr><th>Goal</th><th>Current</th><th>Target</th><th>Diff</th></tr>
-        <tr><td>Weight (kg)</td><td><input id="curW" type="number" step="0.1"></td><td><input id="tarW" type="number" step="0.1"></td><td id="diffW">0</td></tr>
-        <tr><td>Body Fat %</td><td><input id="curBF" type="number" step="0.1"></td><td><input id="tarBF" type="number" step="0.1"></td><td id="diffBF">0</td></tr>
-      </table>
+    <div class="weightlog">
+      <input id="logDate" type="date"><input id="logWeight" type="number" placeholder="kg">
+      <button class="btn" id="addLog">Add</button>
     </div>
-    <div class="card" style="margin-top:12px"><canvas id="progressChart"></canvas></div>
+    <table id="logTable"><tr><th>Date</th><th>Weight</th></tr></table>
+    <canvas id="progChart" style="max-height:300px"></canvas>
   </section>
-
-  <div class="foot">Elevate Tracker • v4 • ©</div>
 </div>
-
 <script>
-(()=>{
-  const $ = id => document.getElementById(id);
-  const N = v => (v===''||v==null)?0:(isFinite(+v)?+v:0);
-  const LS = 'elevate_tracker_v4';
-
-  // -------- Tabs ----------
-  const tabbar = document.getElementById('tabbar');
-  const tabs = [...tabbar.querySelectorAll('.tab')];
-  function show(id){
-    document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
-    const p = document.getElementById(id); if(p) p.classList.add('active');
-    tabs.forEach(t=>{
-      const on = t.dataset.sheet===id;
-      t.classList.toggle('active', on);
-      t.setAttribute('aria-selected', on?'true':'false');
-      t.setAttribute('tabindex', on?'0':'-1');
-    });
-    if(location.hash!=='#'+id) history.replaceState(null,'','#'+id);
-  }
-  tabbar.addEventListener('click', e=>{
-    const t = e.target.closest('.tab'); if(!t) return; show(t.dataset.sheet);
-  });
-  const initial=(location.hash||'#bmr').slice(1);
-  show(document.getElementById(initial)?initial:'bmr');
-
-  // -------- Persistence ----------
-  function save(){
-    const data={};
-    document.querySelectorAll('input,select').forEach(el=>{ if(el.id) data[el.id]=el.value; });
-    localStorage.setItem(LS, JSON.stringify(data));
-  }
-  function load(){
-    const data=JSON.parse(localStorage.getItem(LS)||'{}');
-    Object.keys(data).forEach(k=>{ const el=$(k); if(el) el.value=data[k]; });
-  }
-
-  // -------- Sync groups (shared fields) ----------
-  const syncGroups={
-    age:['bmr_age'],
-    gender:['bmr_gender'],
-    height:['bmr_height','bmi_height'],
-    weight:['bmr_weight','bmi_weight','bc_weight']
-  };
-  function syncField(changedId){
-    for(const key in syncGroups){
-      const g=syncGroups[key];
-      if(g.includes(changedId)){
-        const val = ($(changedId)||{}).value;
-        g.forEach(id=>{ if(id!==changedId){ const el=$(id); if(el && el.value!==val) el.value=val; }});
-      }
-    }
-  }
-
-  // -------- Charts ----------
-  let macroChart=null, mealChart=null, progressChart=null;
-
-  // Legend labels with live percentages
-  function legendWithPercents(ctx){
-    const chart = ctx.chart;
-    const ds = chart.data.datasets[0];
-    const total = ds.data.reduce((a,b)=>a+b,0) || 1;
-    chart.options.plugins.legend.labels.generateLabels = (chart) => {
-      const labels = chart.data.labels;
-      return labels.map((l,i)=>({
-        text: `${l} — ${Math.round((ds.data[i]/total)*100)}%`,
-        fillStyle: ds.backgroundColor[i],
-        strokeStyle: ds.backgroundColor[i],
-        lineWidth: 0,
-        hidden: false,
-        index: i
-      }));
-    };
-  }
-
-  // -------- Calculations ----------
-  function bmrCalc(age, gender, h, w){
-    if(!(age&&h&&w)) return 0;
-    return gender==='male'
-      ? 88.362 + 13.397*w + 4.799*h - 5.677*age
-      : 447.593 + 9.247*w + 3.098*h - 4.330*age;
-  }
-
-  function recalc(){
-    // BMR inputs (on BMR page)
-    const age=N(($('bmr_age')||{}).value), gender=(($('bmr_gender')||{}).value)||'male', h=N(($('bmr_height')||{}).value), w=N(($('bmr_weight')||{}).value);
-    const act=N(($('bmr_activity')||{}).value)||1.55, adj=N(($('bmr_adjust')||{}).value)||0;
-
-    // BMR/TDEE/Target
-    const bmr = Math.round(bmrCalc(age,gender,h,w) || 0);
-    const tdee = Math.round((bmr||0) * act);
-    const target = Math.max(0, tdee + adj);
-
-    // Show in BMR grid + cards
-    $('bmr_out').textContent=bmr;
-    $('bmr_tdee').textContent=tdee;
-    $('bmr_target').textContent=target;
-    $('mc_bmr').textContent=bmr;
-    $('mc_tdee').textContent=tdee;
-    $('mc_target').textContent=target;
-
-    // BMI (fallback to BMR inputs)
-    const bh=N(($('bmi_height')||{}).value || h), bw=N(($('bmi_weight')||{}).value || w);
-    const bmi = bh ? (bw/Math.pow(bh/100,2)) : 0;
-    $('bmi_out').textContent= bmi ? bmi.toFixed(1) : '0';
-    $('bmi_cat').textContent= bmi ? (bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese') : '—';
-
-    // Body Comp
-    const bcw=N(($('bc_weight')||{}).value || w), bf=N(($('bc_bf')||{}).value || 0);
-    const lean = bcw*(1-(bf/100||0));
-    $('bc_lean').textContent = lean ? lean.toFixed(1) : '0';
-    $('bc_fat').textContent = (bcw-(lean||0)) ? (bcw-(lean||0)).toFixed(1) : '0';
-
-    // Macros (Option B: Protein + Fat editable, Carbs = remainder to 100)
-    let pPct=N(($('pPct')||{}).value)||0, fPct=N(($('fPct')||{}).value)||0;
-    if(pPct<0) pPct=0; if(fPct<0) fPct=0;
-    let cPct = 100 - (pPct + fPct);
-    if(cPct<0){ // clamp and pull back fat
-      fPct = Math.max(0, fPct + cPct); // reduce fat first
-      cPct = 0;
-      $('fPct').value = Math.round(fPct);
-    }
-    $('cPct').value = Math.round(cPct);
-    $('pPct').value = Math.round(pPct);
-
-    // calories + grams from target
-    const pcals=target*(pPct/100), ccals=target*(cPct/100), fcals=target*(fPct/100);
-    const pG=pcals/4, cG=ccals/4, fG=fcals/9;
-    $('pCals').textContent=Math.round(pcals); $('cCals').textContent=Math.round(ccals); $('fCals').textContent=Math.round(fcals);
-    $('pGr').textContent=Math.round(pG); $('cGr').textContent=Math.round(cG); $('fGr').textContent=Math.round(fG);
-
-    // Macro pie chart (with legend percentages)
-    const mctx = document.getElementById('macroChart')?.getContext('2d');
-    if(mctx){
-      if(!macroChart){
-        macroChart = new Chart(mctx,{
-          type:'pie',
-          data:{ labels:['Protein','Fat','Carbs'],
-            datasets:[{ data:[pPct,fPct,cPct], backgroundColor:['#004d40','#fbc02d','#a1887f'] }] },
-          options:{ plugins:{ legend:{ position:'bottom' } } }
-        });
-      }else{
-        macroChart.data.datasets[0].data=[pPct,fPct,cPct];
-      }
-      legendWithPercents({chart:macroChart}); // update legend labels with percents
-      macroChart.update();
-    }
-
-    // Meal splits (25/30/30/15 of target calories)
-    const S={b:.25,l:.30,d:.30,s:.15}, R=x=>Math.round(x);
-    $('m1P').textContent=R(pG*S.b); $('m2P').textContent=R(pG*S.l); $('m3P').textContent=R(pG*S.d); $('sP').textContent=R(pG*S.s);
-    $('m1C').textContent=R(cG*S.b); $('m2C').textContent=R(cG*S.l); $('m3C').textContent=R(cG*S.d); $('sC').textContent=R(cG*S.s);
-    $('m1F').textContent=R(fG*S.b); $('m2F').textContent=R(fG*S.l); $('m3F').textContent=R(fG*S.d); $('sF').textContent=R(fG*S.s);
-    $('m1K').textContent=R(target*S.b); $('m2K').textContent=R(target*S.l); $('m3K').textContent=R(target*S.d); $('sK').textContent=R(target*S.s);
-
-    // Meal stacked bars by kcal
-    const labels=['Breakfast','Lunch','Dinner','Snacks'];
-    const pBars=[pG*S.b*4,pG*S.l*4,pG*S.d*4,pG*S.s*4];
-    const cBars=[cG*S.b*4,cG*S.l*4,cG*S.d*4,cG*S.s*4];
-    const fBars=[fG*S.b*9,fG*S.l*9,fG*S.d*9,fG*S.s*9];
-    const mealCtx=document.getElementById('mealChart')?.getContext('2d');
-    if(mealCtx){
-      if(!mealChart){
-        mealChart=new Chart(mealCtx,{type:'bar',
-          data:{labels,datasets:[
-            {label:'Protein kcal',data:pBars,backgroundColor:'#004d40'},
-            {label:'Carbs kcal',data:cBars,backgroundColor:'#fbc02d'},
-            {label:'Fat kcal',data:fBars,backgroundColor:'#a1887f'}]},
-          options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}}
-        });
-      }else{
-        mealChart.data.datasets[0].data=pBars;
-        mealChart.data.datasets[1].data=cBars;
-        mealChart.data.datasets[2].data=fBars;
-        mealChart.update();
-      }
-    }
-
-    // Measurements change
-    function setChange(prefix,unit){
-      const s=N(($(`${prefix}1`)||{}).value);
-      const l=N(($(`${prefix}12`)||{}).value)||N(($(`${prefix}8`)||{}).value)||N(($(`${prefix}4`)||{}).value);
-      const diff=(l&&s)?(l-s):0;
-      const el=$(`${prefix}Change`); if(el) el.textContent=(diff>=0?'+':'')+(isFinite(diff)?diff.toFixed(1):'0')+' '+unit;
-    }
-    setChange('weight','kg'); setChange('bf','%'); setChange('waist','cm');
-
-    // Progress numbers
-    const curW=N(($('curW')||{}).value)||N(($('weight1')||{}).value)||w;
-    const tarW=N(($('tarW')||{}).value);
-    const curBF=N(($('curBF')||{}).value)||N(($('bf1')||{}).value)||N(($('bc_bf')||{}).value);
-    const tarBF=N(($('tarBF')||{}).value);
-    const dw=$('diffW'); if(dw) dw.textContent=(tarW&&curW)?(tarW-curW).toFixed(1):'0';
-    const dbf=$('diffBF'); if(dbf) dbf.textContent=(tarBF&&curBF)?(tarBF-curBF).toFixed(1):'0';
-
-    // Progress chart from weight weeks
-    const wSeries=[N(($('weight1')||{}).value),N(($('weight4')||{}).value),N(($('weight8')||{}).value),N(($('weight12')||{}).value)];
-    const pctx=document.getElementById('progressChart')?.getContext('2d');
-    if(pctx){
-      if(!progressChart){
-        progressChart=new Chart(pctx,{type:'line',
-          data:{labels:['W1','W4','W8','W12'],datasets:[{label:'Weight (kg)',data:wSeries,fill:false,borderColor:'#004d40',tension:0.2}]},
-          options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:false}}}});
-      }else{ progressChart.data.datasets[0].data=wSeries; progressChart.update(); }
-    }
-  }
-
-  // Listeners
-  document.addEventListener('input', (e)=>{
-    if(!e.target.matches('input,select')) return;
-    syncField(e.target.id);
-    recalc();
-    save();
-  });
-
-  // Boot
-  load();
-  recalc();
-})();
-</script>
-  <script>
-(()=>{
-  const $ = id => document.getElementById(id);
-  const N = v => (v===''||v==null)?0:(isFinite(+v)?+v:0);
-  const LS = 'elevate_tracker_v4';
-
-  // -------- Tabs ----------
-  const tabbar = document.getElementById('tabbar');
-  const tabs = [...tabbar.querySelectorAll('.tab')];
-  function show(id){
-    document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
-    const p = document.getElementById(id); if(p) p.classList.add('active');
-    tabs.forEach(t=>{
-      const on = t.dataset.sheet===id;
-      t.classList.toggle('active', on);
-      t.setAttribute('aria-selected', on?'true':'false');
-      t.setAttribute('tabindex', on?'0':'-1');
-    });
-    if(location.hash!=='#'+id) history.replaceState(null,'','#'+id);
-  }
-  tabbar.addEventListener('click', e=>{
-    const t = e.target.closest('.tab'); if(!t) return; show(t.dataset.sheet);
-  });
-  const initial=(location.hash||'#bmr').slice(1);
-  show(document.getElementById(initial)?initial:'bmr');
-
-  // -------- Persistence ----------
-  function save(){
-    const data={};
-    document.querySelectorAll('input,select').forEach(el=>{ if(el.id) data[el.id]=el.value; });
-    localStorage.setItem(LS, JSON.stringify(data));
-  }
-  function load(){
-    const data=JSON.parse(localStorage.getItem(LS)||'{}');
-    Object.keys(data).forEach(k=>{ const el=$(k); if(el) el.value=data[k]; });
-  }
-
-  // -------- Sync groups ----------
-  const syncGroups={
-    age:['bmr_age'],
-    gender:['bmr_gender'],
-    height:['bmr_height','bmi_height'],
-    weight:['bmr_weight','bmi_weight','bc_weight']
-  };
-  function syncField(changedId){
-    for(const key in syncGroups){
-      const g=syncGroups[key];
-      if(g.includes(changedId)){
-        const val = ($(changedId)||{}).value;
-        g.forEach(id=>{ if(id!==changedId){ const el=$(id); if(el && el.value!==val) el.value=val; }});
-      }
-    }
-  }
-
-  // -------- Charts ----------
-  let macroChart=null, mealChart=null, progressChart=null;
-
-  // Custom plugin to draw percentage labels inside pie slices
-  const pieLabelsPlugin = {
-    id: 'pieLabels',
-    afterDraw(chart) {
-      const {ctx, chartArea:{width,height}} = chart;
-      chart.data.datasets.forEach((dataset, i) => {
-        const total = dataset.data.reduce((a,b)=>a+b,0) || 1;
-        chart.getDatasetMeta(i).data.forEach((arc, index) => {
-          const val = dataset.data[index];
-          if (!val) return;
-          const percent = Math.round((val/total)*100);
-          const pos = arc.tooltipPosition();
-          ctx.save();
-          ctx.fillStyle = "#fff";
-          ctx.font = "bold 12px Arial";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(percent+"%", pos.x, pos.y);
-          ctx.restore();
-        });
-      });
-    }
-  };
-
-  // -------- Calculations ----------
-  function bmrCalc(age, gender, h, w){
-    if(!(age&&h&&w)) return 0;
-    return gender==='male'
-      ? 88.362 + 13.397*w + 4.799*h - 5.677*age
-      : 447.593 + 9.247*w + 3.098*h - 4.330*age;
-  }
-
-  function recalc(){
-    // (unchanged code … all your BMR, BMI, Body Comp, Macros, Meals, Progress logic here)
-
-    // ---- Macro pie chart with slice labels ----
-    const mctx = document.getElementById('macroChart')?.getContext('2d');
-    if(mctx){
-      if(!macroChart){
-        macroChart = new Chart(mctx,{
-          type:'pie',
-          data:{ labels:['Protein','Fat','Carbs'],
-            datasets:[{ data:[pPct,fPct,cPct], backgroundColor:['#004d40','#fbc02d','#a1887f'] }] },
-          options:{ plugins:{ legend:{ position:'bottom' } } },
-          plugins:[pieLabelsPlugin]   // 👈 added plugin
-        });
-      }else{
-        macroChart.data.datasets[0].data=[pPct,fPct,cPct];
-      }
-      macroChart.update();
-    }
-
-    // (rest of recalc continues unchanged)
-  }
-
-  // Listeners
-  document.addEventListener('input', (e)=>{
-    if(!e.target.matches('input,select')) return;
-    syncField(e.target.id);
-    recalc();
-    save();
-  });
-
-  // Boot
-  load();
-  recalc();
-})();
+// Tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.sheet').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');document.getElementById(t.dataset.sheet).classList.add('active');
+}));
+// BMR
+function calcBMR(){
+ let a=+bmr_age.value||0,h=+bmr_height.value||0,w=+bmr_weight.value||0;
+ let g=bmr_gender.value,m;if(g=="male")m=10*w+6.25*h-5*a+5;else m=10*w+6.25*h-5*a-161;
+ let tdee=m*(+bmr_activity.value||1),tar=tdee+(+bmr_adjust.value||0);
+ bmr_out.textContent=Math.round(m);bmr_tdee.textContent=Math.round(tdee);bmr_target.textContent=Math.round(tar);
+ mc_bmr.textContent=Math.round(m);mc_tdee.textContent=Math.round(tdee);mc_target.textContent=Math.round(tar);
+ localStorage.setItem("targetCals",tar);
+}
+document.querySelectorAll('#bmr input,#bmr select').forEach(e=>e.addEventListener('input',calcBMR));
+// BMI
+function calcBMI(){
+ let h=+bmi_height.value/100,w=+bmi_weight.value;let bmi=w/(h*h);
+ bmi_out.textContent=(bmi?bmi.toFixed(1):0);
+ bmi_cat.textContent=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
+}
+document.querySelectorAll('#bmi input').forEach(e=>e.addEventListener('input',calcBMI));
+// Body Comp
+function calcBC(){
+ let w=+bc_weight.value,bf=+bc_bf.value/100;bc_lean.textContent=(w*(1-bf)).toFixed(1);bc_fat.textContent=(w*bf).toFixed(1);
+}
+document.querySelectorAll('#bodycomp input').forEach(e=>e.addEventListener('input',calcBC));
+// Macros
+let macroChart=new Chart(macroChart.getContext('2d'),{type:'pie',data:{labels:["Protein","Carbs","Fat"],datasets:[{data:[30,40,30],backgroundColor:["#4caf50","#2196f3","#ff9800"]}]},options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.label+": "+c.formattedValue+"%"}}}}});
+function updateMacros(){
+ let p=+pPct.value||0,f=+fPct.value||0,c=100-p-f;if(c<0)c=0;cPct.value=c;
+ let t=+localStorage.getItem("targetCals")||2000;
+ let pcals=t*p/100,fcals=t*f/100,ccals=t*c/100;
+ pGr.textContent=Math.round(pcals/4)+"g";cGr.textContent=Math.round(ccals/4)+"g";fGr.textContent=Math.round(fcals/9)+"g";
+ macroChart.data.datasets[0].data=[p,c,f];macroChart.update();
+}
+document.querySelectorAll('#macros input').forEach(e=>e.addEventListener('input',updateMacros));
+// Measurements
+function meas(){wch.textContent=(w12.value-w1.value).toFixed(1);}
+w1.oninput=w12.oninput=meas;
+// Progress
+let progChart=new Chart(progChart.getContext('2d'),{type:'line',data:{labels:[],datasets:[{label:"Weight",data:[],borderColor:"#4caf50"}]}});
+function renderLogs(){let logs=JSON.parse(localStorage.getItem("logs")||"[]");logTable.innerHTML="<tr><th>Date</th><th>Weight</th></tr>";logs.forEach(l=>{logTable.innerHTML+=`<tr><td>${l.d}</td><td>${l.w}</td></tr>`});progChart.data.labels=logs.map(l=>l.d);progChart.data.datasets[0].data=logs.map(l=>l.w);progChart.update();}
+addLog.onclick=()=>{let d=logDate.value,w=+logWeight.value;if(!d||!w)return;let logs=JSON.parse(localStorage.getItem("logs")||"[]");logs.push({d,w});localStorage.setItem("logs",JSON.stringify(logs));renderLogs();};
+renderLogs();
 </script>
 </body>
 </html>
