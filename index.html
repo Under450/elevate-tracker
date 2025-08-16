@@ -1,163 +1,438 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elevate Fitness Tracker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-  <style>
-    body {
-      font-family: 'Calibri', Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-    }
-    .excel-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .excel-header {
-      background: #004d40; /* Elevate green */
-      color: #fbc02d;     /* Elevate gold */
-      padding: 20px;
-      text-align: center;
-      border-bottom: 3px solid #00251a;
-    }
-    .excel-tabs {
-      background: #eeeeee;
-      display: flex;
-      border-bottom: 2px solid #ccc;
-    }
-    .tab {
-      padding: 12px 24px;
-      background: #f2f2f2;
-      border-right: 1px solid #ccc;
-      cursor: pointer;
-      transition: background 0.3s;
-      font-weight: bold;
-    }
-    .tab.active {
-      background: white;
-      border-bottom: 2px solid white;
-      margin-bottom: -2px;
-    }
-    .tab:hover {
-      background: #e0e0e0;
-    }
-    .sheet-content { display: none; padding: 20px; }
-    .sheet-content.active { display: block; }
-    .excel-grid {
-      display: grid;
-      grid-template-columns: 150px 200px 150px 200px 150px 200px;
-      gap: 2px;
-      background: #e0e0e0;
-      border: 2px solid #a6a6a6;
-      margin-bottom: 30px;
-    }
-    .grid-cell {
-      background: white;
-      border: 1px solid #d4d4d4;
-      padding: 8px;
-      font-size: 11px;
-      min-height: 25px;
-      display: flex;
-      align-items: center;
-    }
-    .header-cell {
-      background: #004d40;
-      color: #fbc02d;
-      font-weight: bold;
-      text-align: center;
-      justify-content: center;
-    }
-    .label-cell {
-      background: #c8e6c9;
-      font-weight: bold;
-      border-right: 2px solid #004d40;
-    }
-    .input-cell input, .input-cell select {
-      width: 100%;
-      border: none;
-      background: transparent;
-      font-size: 11px;
-      padding: 2px;
-    }
-    .formula-cell { background: #e2efda; font-weight: bold; color: #0d5f0d; }
-    .result-cell { background: #fff2cc; font-weight: bold; color: #7f6000; text-align: center; justify-content: center; }
-    .section-title {
-      background: #004d40;
-      color: #fbc02d;
-      padding: 10px;
-      font-weight: bold;
-      text-align: center;
-      margin: 20px 0 10px 0;
-      border-radius: 4px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elevate Fitness Tracker</title>
+<link rel="icon" href="data:,">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+  :root{
+    --bg:#F4F2ED; --card:#fff; --green:#004d40; --gold:#fbc02d; --dark:#00251a; --accent:#2E75B6; --ink:#333;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter, Arial, sans-serif;background:#f9f9f9;margin:0;padding:18px;color:var(--ink)}
+  .container{max-width:1200px;margin:0 auto;background:var(--card);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.08);overflow:hidden}
+  .header{background:linear-gradient(180deg,var(--green),#053e34);color:var(--gold);padding:20px 18px;border-bottom:4px solid var(--dark)}
+  .header h1{margin:0;font-weight:800;letter-spacing:.3px}
+  .sub{color:#fff;opacity:.9;margin-top:6px}
+  .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 18px;background:#eeeeee;flex-wrap:wrap}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .tab{padding:10px 14px;background:#fff;border:1px solid #ddd;border-radius:999px;font-weight:700;cursor:pointer;user-select:none}
+  .tab.active{background:var(--gold);color:#111;border-color:var(--gold);box-shadow:0 8px 18px rgba(251,192,45,.25)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--gold);color:#111}
+  .btn.ghost{background:#fff;border:2px solid var(--green);color:var(--green)}
+  .sheet{display:none;padding:18px}
+  .sheet.active{display:block}
+  .section{background:var(--green);color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
+  .grid{display:grid;grid-template-columns:150px 1fr 150px 1fr 150px 1fr;gap:2px;background:#e0e0e0;border:2px solid #a6a6a6;margin-bottom:22px}
+  .cell{background:#fff;border:1px solid #dcdcdc;padding:8px;min-height:34px;display:flex;align-items:center;font-size:13px}
+  .head{background:var(--green);color:var(--gold);font-weight:800;justify-content:center;text-align:center}
+  .label{background:#c8e6c9;border-right:2px solid var(--green);font-weight:700}
+  .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
+  .formula{background:#e2efda;color:#135b13;font-weight:700}
+  input, select{width:100%;border:none;background:transparent;font-size:13px;outline:none}
+  table{width:100%;border-collapse:collapse}
+  th{background:var(--green);color:var(--gold);padding:10px}
+  td{border:1px solid #e6e6e6;padding:8px;text-align:center}
+  .card{background:#fff;border:1px solid #eee;border-radius:10px;padding:12px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .mt12{margin-top:12px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr 1fr}}
+  @media print{.topbar,.actions{display:none!important} body{background:#fff} .container{box-shadow:none;border:none} .sheet{display:block!important}}
+</style>
 </head>
 <body>
-  <div class="excel-container">
-    <div class="excel-header">
-      <h1>🏋️ Elevate Fitness Tracker</h1>
-      <p>Professional Client Management System</p>
-    </div>
+<div class="container" role="application" aria-label="Elevate Fitness Tracker">
+  <div class="header">
+    <h1>Elevate Fitness Tracker</h1>
+    <div class="sub">Excel-style client tracker — data saves locally, export/import JSON, print to PDF</div>
+  </div>
 
-    <div class="excel-tabs">
-      <div class="tab active" onclick="switchTab('client-info')">Client Info</div>
-      <div class="tab" onclick="switchTab('calculations')">BMR & TDEE</div>
-      <div class="tab" onclick="switchTab('macros')">Macros</div>
-      <div class="tab" onclick="switchTab('measurements')">Measurements</div>
-      <div class="tab" onclick="switchTab('progress')">Progress</div>
+  <div class="topbar">
+    <div class="tabs" id="tabs" role="tablist">
+      <div class="tab active" data-sheet="client">Client Info</div>
+      <div class="tab" data-sheet="calc">BMR & TDEE</div>
+      <div class="tab" data-sheet="macros">Macros</div>
+      <div class="tab" data-sheet="meas">Measurements</div>
+      <div class="tab" data-sheet="prog">Progress</div>
     </div>
-
-    <!-- Example first tab -->
-    <div id="client-info" class="sheet-content active">
-      <div class="section-title">Client Information</div>
-      <div class="excel-grid">
-        <div class="grid-cell header-cell">Field</div>
-        <div class="grid-cell header-cell">Value</div>
-        <div class="grid-cell label-cell">Name</div>
-        <div class="grid-cell input-cell"><input type="text" id="clientName"></div>
-        <div class="grid-cell label-cell">Age</div>
-        <div class="grid-cell input-cell"><input type="number" id="age"></div>
-        <div class="grid-cell label-cell">Gender</div>
-        <div class="grid-cell input-cell">
-          <select id="gender"><option>Male</option><option>Female</option></select>
-        </div>
-      </div>
-    </div>
-
-    <div id="calculations" class="sheet-content">
-      <div class="section-title">BMR & TDEE</div>
-      <p>Formulas and results will go here…</p>
-    </div>
-
-    <div id="macros" class="sheet-content">
-      <div class="section-title">Macros</div>
-      <p>Macro planner content here…</p>
-    </div>
-
-    <div id="measurements" class="sheet-content">
-      <div class="section-title">Measurements</div>
-      <p>Tracking table here…</p>
-    </div>
-
-    <div id="progress" class="sheet-content">
-      <div class="section-title">Progress</div>
-      <p>Progress tracking content here…</p>
+    <div class="actions">
+      <button class="btn primary" id="saveBtn">Save</button>
+      <button class="btn ghost" id="clearBtn">Clear</button>
+      <button class="btn primary" id="exportBtn">Export</button>
+      <button class="btn ghost" id="importBtn">Import</button>
+      <button class="btn primary" id="printBtn">Print / PDF</button>
+      <input type="file" id="fileImport" accept="application/json" style="display:none">
     </div>
   </div>
 
-  <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.sheet-content').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+  <!-- CLIENT -->
+  <section id="client" class="sheet active">
+    <div class="section">Client Information</div>
+    <div class="grid">
+      <div class="cell head">Field</div><div class="cell head">Value</div>
+      <div class="cell head">Field</div><div class="cell head">Value</div>
+      <div class="cell head">Field</div><div class="cell head">Value</div>
+
+      <div class="cell label">Name</div><div class="cell"><input id="clientName" placeholder="Full name"></div>
+      <div class="cell label">Age</div><div class="cell"><input id="age" type="number" min="10"></div>
+      <div class="cell label">Gender</div><div class="cell">
+        <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
+      </div>
+
+      <div class="cell label">Height (cm)</div><div class="cell"><input id="height" type="number" step="0.1"></div>
+      <div class="cell label">Weight (kg)</div><div class="cell"><input id="weight" type="number" step="0.1"></div>
+      <div class="cell label">Body Fat %</div><div class="cell"><input id="bodyFat" type="number" step="0.1"></div>
+
+      <div class="cell label">Activity</div><div class="cell">
+        <select id="activity">
+          <option value="1.2">Sedentary</option><option value="1.375">Light</option>
+          <option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option>
+        </select>
+      </div>
+      <div class="cell label">Goal</div><div class="cell">
+        <select id="goal"><option value="lose">Lose</option><option value="maintain" selected>Maintain</option><option value="gain">Gain</option></select>
+      </div>
+      <div class="cell label">Start Date</div><div class="cell"><input id="startDate" type="date"></div>
+    </div>
+  </section>
+
+  <!-- CALC -->
+  <section id="calc" class="sheet">
+    <div class="section">BMR • TDEE • BMI • Body Comp</div>
+    <div class="grid">
+      <div class="cell head">Metric</div><div class="cell head">Info</div>
+      <div class="cell head">Result</div><div class="cell head">Unit</div>
+      <div class="cell head">Extra</div><div class="cell head">Value</div>
+
+      <div class="cell label">BMR</div><div class="cell formula">Mifflin–St Jeor</div><div class="cell result" id="bmr">0</div><div class="cell">cal/day</div><div class="cell">Base</div><div class="cell result" id="bmrTarget">0</div>
+      <div class="cell label">TDEE</div><div class="cell formula">BMR × Activity</div><div class="cell result" id="tdee">0</div><div class="cell">cal/day</div>
+      <div class="cell label">Adjustment</div>
+      <div class="cell">
+        <select id="adjust">
+          <option value="-500">-500 (cut)</option><option value="-300">-300</option><option value="-200">-200</option>
+          <option value="0" selected>0 (maint)</option><option value="200">+200</option><option value="300">+300</option><option value="500">+500 (bulk)</option>
+        </select>
+      </div>
+      <div class="cell result" id="targetCal">0</div><div class="cell">cal/day</div><div class="cell">Target cals</div><div class="cell result" id="targetCal2">0</div>
+
+      <div class="cell label">BMI</div><div class="cell formula">W / (H/100)^2</div><div class="cell result" id="bmi">0</div><div class="cell">kg/m²</div><div class="cell">Category</div><div class="cell result" id="bmiCat">—</div>
+      <div class="cell label">Lean Mass</div><div class="cell formula">W × (1-BF%)</div><div class="cell result" id="lean">0</div><div class="cell">kg</div><div class="cell">Fat Mass</div><div class="cell result" id="fat">0</div>
+    </div>
+  </section>
+
+  <!-- MACROS -->
+  <section id="macros" class="sheet">
+    <div class="section">Macro Planning</div>
+    <div class="grid">
+      <div class="cell head">Macro</div><div class="cell head">Mode / Value</div><div class="cell head">Calories</div><div class="cell head">Grams</div><div class="cell head">Cal/g</div><div class="cell head">Note</div>
+
+      <div class="cell label">Protein</div>
+      <div class="cell">
+        <select id="pMode" style="width:40%"><option value="pct" selected>%</option><option value="g">grams</option></select>
+        <input id="pPct" type="number" value="30" style="width:50%;margin-left:8px">%
+        <input id="pGrManual" type="number" value="0" style="width:50%;margin-left:8px;display:none">
+      </div>
+      <div class="cell result" id="pCals">0</div><div class="cell result" id="pGr">0</div><div class="cell">4</div><div class="cell formula">=C/4</div>
+
+      <div class="cell label">Carbs</div>
+      <div class="cell">
+        <select id="cMode" style="width:40%"><option value="pct" selected>%</option><option value="g">grams</option></select>
+        <input id="cPct" type="number" value="40" style="width:50%;margin-left:8px">%
+        <input id="cGrManual" type="number" value="0" style="width:50%;margin-left:8px;display:none">
+      </div>
+      <div class="cell result" id="cCals">0</div><div class="cell result" id="cGr">0</div><div class="cell">4</div><div class="cell formula">=C/4</div>
+
+      <div class="cell label">Fat</div>
+      <div class="cell">
+        <select id="fMode" style="width:40%"><option value="pct" selected>%</option><option value="g">grams</option></select>
+        <input id="fPct" type="number" value="30" style="width:50%;margin-left:8px">%
+        <input id="fGrManual" type="number" value="0" style="width:50%;margin-left:8px;display:none">
+      </div>
+      <div class="cell result" id="fCals">0</div><div class="cell result" id="fGr">0</div><div class="cell">9</div><div class="cell formula">=C/9</div>
+
+      <div class="cell head">TOTAL</div><div class="cell" id="modeTotal">Auto %</div><div class="cell result" id="totalCals">0</div><div class="cell result" id="totalGr">0</div><div class="cell">—</div><div class="cell formula">=SUM</div>
+    </div>
+
+    <div class="two mt12">
+      <div class="card">
+        <canvas id="macroChart" style="max-height:340px"></canvas>
+      </div>
+      <div class="card">
+        <div class="section" style="margin-top:0">Meal Timing Recommendations</div>
+        <table>
+          <tr><th>Meal</th><th>Protein (g)</th><th>Carbs (g)</th><th>Fat (g)</th><th>Calories</th></tr>
+          <tr><td>Breakfast</td><td id="meal1Protein">0</td><td id="meal1Carbs">0</td><td id="meal1Fat">0</td><td id="meal1Cals">0</td></tr>
+          <tr><td>Lunch</td><td id="meal2Protein">0</td><td id="meal2Carbs">0</td><td id="meal2Fat">0</td><td id="meal2Cals">0</td></tr>
+          <tr><td>Dinner</td><td id="meal3Protein">0</td><td id="meal3Carbs">0</td><td id="meal3Fat">0</td><td id="meal3Cals">0</td></tr>
+          <tr><td>Snacks</td><td id="snackProtein">0</td><td id="snackCarbs">0</td><td id="snackFat">0</td><td id="snackCals">0</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mt12">
+      <canvas id="mealChart" style="max-height:300px"></canvas>
+    </div>
+  </section>
+
+  <!-- MEASUREMENTS -->
+  <section id="meas" class="sheet">
+    <div class="section">Body Measurements</div>
+    <div class="card">
+      <table>
+        <tr><th>Measurement</th><th>W1</th><th>W2</th><th>W4</th><th>W8</th><th>W12</th><th>Change</th></tr>
+        <tr><td>Weight (kg)</td><td><input id="weight1" type="number" step="0.1"></td><td><input id="weight2" type="number" step="0.1"></td><td><input id="weight4" type="number" step="0.1"></td><td><input id="weight8" type="number" step="0.1"></td><td><input id="weight12" type="number" step="0.1"></td><td id="weightChange">0 kg</td></tr>
+        <tr><td>Body Fat %</td><td><input id="bf1" type="number" step="0.1"></td><td><input id="bf2" type="number" step="0.1"></td><td><input id="bf4" type="number" step="0.1"></td><td><input id="bf8" type="number" step="0.1"></td><td><input id="bf12" type="number" step="0.1"></td><td id="bfChange">0%</td></tr>
+        <tr><td>Chest (cm)</td><td><input id="chest1" type="number" step="0.1"></td><td><input id="chest2" type="number" step="0.1"></td><td><input id="chest4" type="number" step="0.1"></td><td><input id="chest8" type="number" step="0.1"></td><td><input id="chest12" type="number" step="0.1"></td><td id="chestChange">0 cm</td></tr>
+        <tr><td>Waist (cm)</td><td><input id="waist1" type="number" step="0.1"></td><td><input id="waist2" type="number" step="0.1"></td><td><input id="waist4" type="number" step="0.1"></td><td><input id="waist8" type="number" step="0.1"></td><td><input id="waist12" type="number" step="0.1"></td><td id="waistChange">0 cm</td></tr>
+        <tr><td>Hips (cm)</td><td><input id="hips1" type="number" step="0.1"></td><td><input id="hips2" type="number" step="0.1"></td><td><input id="hips4" type="number" step="0.1"></td><td><input id="hips8" type="number" step="0.1"></td><td><input id="hips12" type="number" step="0.1"></td><td id="hipsChange">0 cm</td></tr>
+        <tr><td>Arms (cm)</td><td><input id="arms1" type="number" step="0.1"></td><td><input id="arms2" type="number" step="0.1"></td><td><input id="arms4" type="number" step="0.1"></td><td><input id="arms8" type="number" step="0.1"></td><td><input id="arms12" type="number" step="0.1"></td><td id="armsChange">0 cm</td></tr>
+        <tr><td>Thighs (cm)</td><td><input id="thighs1" type="number" step="0.1"></td><td><input id="thighs2" type="number" step="0.1"></td><td><input id="thighs4" type="number" step="0.1"></td><td><input id="thighs8" type="number" step="0.1"></td><td><input id="thighs12" type="number" step="0.1"></td><td id="thighsChange">0 cm</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="prog" class="sheet">
+    <div class="section">Progress & Strength</div>
+    <div class="two">
+      <div class="card"><canvas id="progressChart"></canvas></div>
+      <div class="card">
+        <table>
+          <tr><th>Goal</th><th>Current</th><th>Target</th><th>Diff</th></tr>
+          <tr><td>Weight</td><td><input id="curW" type="number" step="0.1"></td><td><input id="targetW" type="number" step="0.1"></td><td id="diffW">0</td></tr>
+          <tr><td>Body Fat %</td><td><input id="curBF" type="number" step="0.1"></td><td><input id="targetBF" type="number" step="0.1"></td><td id="diffBF">0</td></tr>
+        </table>
+
+        <div class="section" style="margin-top:12px">Workout Records</div>
+        <table>
+          <tr><th>Exercise</th><th>W1</th><th>W4</th><th>W8</th><th>W12</th><th>Improvement</th></tr>
+          <tr><td>Bench</td><td><input id="bench1" type="number"></td><td><input id="bench4" type="number"></td><td><input id="bench8" type="number"></td><td><input id="bench12" type="number"></td><td id="benchImp">0</td></tr>
+          <tr><td>Squat</td><td><input id="squat1" type="number"></td><td><input id="squat4" type="number"></td><td><input id="squat8" type="number"></td><td><input id="squat12" type="number"></td><td id="squatImp">0</td></tr>
+          <tr><td>Deadlift</td><td><input id="dead1" type="number"></td><td><input id="dead4" type="number"></td><td><input id="dead8" type="number"></td><td><input id="dead12" type="number"></td><td id="deadImp">0</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(()=> {
+  const $ = id => document.getElementById(id);
+  const toNum = v => isFinite(+v) ? +v : 0;
+  const LS = 'elevate_tracker_final_v1';
+
+  // Tabs
+  document.getElementById('tabs').addEventListener('click', (e)=>{
+    const tab = e.target.closest('.tab'); if(!tab) return;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.sheet).classList.add('active');
+  });
+
+  // CALCULATIONS
+  function calcAll(){
+    const age=toNum($('age').value), gender=$('gender').value, h=toNum($('height').value), w=toNum($('weight').value);
+    const bf=toNum($('bodyFat').value), act=toNum($('activity').value)||1, adj=toNum($('adjust')?.value||0);
+
+    let bmr=0;
+    if(w && h && age){
+      bmr = (gender==='male')
+        ? 88.362 + 13.397*w + 4.799*h - 5.677*age
+        : 447.593 + 9.247*w + 3.098*h - 4.330*age;
     }
-  </script>
+    $('bmr').textContent = Math.round(bmr||0);
+    $('bmrTarget').textContent = Math.round(bmr||0);
+
+    const tdee = Math.round((bmr||0) * act);
+    $('tdee').textContent = tdee;
+    const target = Math.max(0, tdee + adj);
+    $('targetCal').textContent = target;
+    $('targetCal2').textContent = target;
+
+    const bmi = h ? (w / Math.pow(h/100,2)) : 0;
+    $('bmi').textContent = bmi ? bmi.toFixed(1) : '0';
+    $('bmiCat').textContent = bmi ? (bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese') : '—';
+
+    const lean = w * (1 - (bf/100 || 0));
+    $('lean').textContent = lean ? lean.toFixed(1) : '0';
+    $('fat').textContent = (w-lean) ? (w-lean).toFixed(1) : '0';
+
+    updateMacros();
+    updateMeasurements();
+    updateProgress();
+  }
+
+  // MACROS & MEAL SPLIT
+  let macroChart=null, mealChart=null;
+  function updateMacros(){
+    const target = toNum($('targetCal').textContent)||0;
+
+    const pMode=$('pMode')?.value||'pct', cMode=$('cMode')?.value||'pct', fMode=$('fMode')?.value||'pct';
+    const pPct=toNum($('pPct')?.value||0), cPct=toNum($('cPct')?.value||0), fPct=toNum($('fPct')?.value||0);
+    const pMan=toNum($('pGrManual')?.value||0), cMan=toNum($('cGrManual')?.value||0), fMan=toNum($('fGrManual')?.value||0);
+
+    let pC=0,cC=0,fC=0,pG=0,cG=0,fG=0;
+    if(pMode==='pct'){ pC = target*(pPct/100); pG=pC/4; $('pPct').style.display='inline-block'; $('pGrManual').style.display='none'; }
+    else{ pG=pMan; pC=pG*4; $('pPct').style.display='none'; $('pGrManual').style.display='inline-block'; }
+    if(cMode==='pct'){ cC = target*(cPct/100); cG=cC/4; $('cPct').style.display='inline-block'; $('cGrManual').style.display='none'; }
+    else{ cG=cMan; cC=cG*4; $('cPct').style.display='none'; $('cGrManual').style.display='inline-block'; }
+    if(fMode==='pct'){ fC = target*(fPct/100); fG=fC/9; $('fPct').style.display='inline-block'; $('fGrManual').style.display='none'; }
+    else{ fG=fMan; fC=fG*9; $('fPct').style.display='none'; $('fGrManual').style.display='inline-block'; }
+
+    $('pCals').textContent=Math.round(pC); $('cCals').textContent=Math.round(cC); $('fCals').textContent=Math.round(fC);
+    $('pGr').textContent=Math.round(pG); $('cGr').textContent=Math.round(cG); $('fGr').textContent=Math.round(fG);
+    $('totalCals').textContent=Math.round(pC+cC+fC);
+    $('totalGr').textContent=Math.round(pG+cG+fG);
+    $('modeTotal').textContent=(pMode==='pct'&&cMode==='pct'&&fMode==='pct')?'Auto %':'Manual';
+
+    // Macro pie/doughnut
+    const pieData=[pC,cC,fC];
+    if(!macroChart){
+      macroChart = new Chart(document.getElementById('macroChart').getContext('2d'),{
+        type:'doughnut',
+        data:{labels:['Protein','Carbs','Fat'],datasets:[{data:pieData,backgroundColor:['#004d40','#fbc02d','#a1887f']}]},
+        options:{plugins:{legend:{position:'bottom'}}}
+      });
+    }else{ macroChart.data.datasets[0].data=pieData; macroChart.update(); }
+
+    // Meal split 25/30/30/15
+    const SPLIT={b:0.25,l:0.30,d:0.30,s:0.15};
+    const round=v=>Math.round(v);
+    const set=(id,val)=>{$(id).textContent=round(val);};
+
+    set('meal1Protein', pG*SPLIT.b); set('meal2Protein', pG*SPLIT.l); set('meal3Protein', pG*SPLIT.d); set('snackProtein', pG*SPLIT.s);
+    set('meal1Carbs', cG*SPLIT.b); set('meal2Carbs', cG*SPLIT.l); set('meal3Carbs', cG*SPLIT.d); set('snackCarbs', cG*SPLIT.s);
+    set('meal1Fat', fG*SPLIT.b); set('meal2Fat', fG*SPLIT.l); set('meal3Fat', fG*SPLIT.d); set('snackFat', fG*SPLIT.s);
+
+    set('meal1Cals', target*SPLIT.b); set('meal2Cals', target*SPLIT.l); set('meal3Cals', target*SPLIT.d); set('snackCals', target*SPLIT.s);
+
+    // Meal distribution chart (stacked-style with grouped bars)
+    const labels=['Breakfast','Lunch','Dinner','Snacks'];
+    const pBars=[pG*SPLIT.b*4, pG*SPLIT.l*4, pG*SPLIT.d*4, pG*SPLIT.s*4];
+    const cBars=[cG*SPLIT.b*4, cG*SPLIT.l*4, cG*SPLIT.d*4, cG*SPLIT.s*4];
+    const fBars=[fG*SPLIT.b*9, fG*SPLIT.l*9, fG*SPLIT.d*9, fG*SPLIT.s*9];
+    if(!mealChart){
+      mealChart = new Chart(document.getElementById('mealChart').getContext('2d'),{
+        type:'bar',
+        data:{labels,datasets:[
+          {label:'Protein kcal', data:pBars, backgroundColor:'#004d40'},
+          {label:'Carbs kcal', data:cBars, backgroundColor:'#fbc02d'},
+          {label:'Fat kcal', data:fBars, backgroundColor:'#a1887f'}
+        ]},
+        options:{plugins:{legend:{position:'bottom'}}, responsive:true, scales:{x:{stacked:true}, y:{stacked:true}}}
+      });
+    }else{
+      mealChart.data.datasets[0].data=pBars;
+      mealChart.data.datasets[1].data=cBars;
+      mealChart.data.datasets[2].data=fBars;
+      mealChart.update();
+    }
+  }
+
+  // MEASUREMENTS
+  function updateMeasurements(){
+    function setChange(prefix,unit){
+      const start=toNum($(prefix+'1')?.value);
+      const last = toNum($(prefix+'12')?.value) || toNum($(prefix+'8')?.value) || toNum($(prefix+'4')?.value) || toNum($(prefix+'2')?.value);
+      const diff = (last - start) || 0;
+      const el = $(prefix+'Change'); if(el) el.textContent = (diff>=0?'+':'') + diff.toFixed(1) + ' ' + unit;
+    }
+    setChange('weight','kg'); setChange('bf','%'); setChange('chest','cm'); setChange('waist','cm'); setChange('hips','cm'); setChange('arms','cm'); setChange('thighs','cm');
+  }
+
+  // PROGRESS
+  let progressChart=null;
+  function updateProgress(){
+    const curW=toNum($('curW').value)||toNum($('weight1').value)||toNum($('weight').value);
+    const targetW=toNum($('targetW').value); $('diffW').textContent = (targetW? (targetW-curW).toFixed(1) : '0');
+    const curBF=toNum($('curBF').value)||toNum($('bf1').value)||toNum($('bodyFat').value);
+    const targBF=toNum($('targetBF').value); $('diffBF').textContent = (targBF? (targBF-curBF).toFixed(1) : '0');
+
+    function lift(prefix){
+      const arr=[toNum($(prefix+'1').value),toNum($(prefix+'4').value),toNum($(prefix+'8').value),toNum($(prefix+'12').value)];
+      const first = arr.find(v=>v>0) || 0, last = [...arr].reverse().find(v=>v>0) || 0;
+      $(prefix+'Imp').textContent=((last-first)>=0?'+':'') + (last-first);
+      return arr;
+    }
+    const bench=lift('bench'), squat=lift('squat'), dead=lift('dead');
+
+    const labels=['W1','W4','W8','W12'];
+    const weightSeries=[toNum($('weight1').value),toNum($('weight4').value),toNum($('weight8').value),toNum($('weight12').value)];
+    if(!progressChart){
+      progressChart = new Chart(document.getElementById('progressChart').getContext('2d'),{
+        type:'line',
+        data:{labels, datasets:[
+          {label:'Weight (kg)', data:weightSeries, borderColor:'#2E75B6', fill:false, tension:.25},
+          {label:'Bench (kg)', data:bench, borderColor:'#fbc02d', fill:false, tension:.25},
+          {label:'Squat (kg)', data:squat, borderColor:'#004d40', fill:false, tension:.25},
+          {label:'Deadlift (kg)', data:dead, borderColor:'#8E44AD', fill:false, tension:.25}
+        ]},
+        options:{plugins:{legend:{position:'bottom'}}}
+      });
+    }else{
+      progressChart.data.datasets[0].data=weightSeries;
+      progressChart.data.datasets[1].data=bench;
+      progressChart.data.datasets[2].data=squat;
+      progressChart.data.datasets[3].data=dead;
+      progressChart.update();
+    }
+  }
+
+  // SAVE / LOAD / EXPORT / IMPORT
+  function saveAll(notify=true){
+    const data={};
+    document.querySelectorAll('input, select').forEach(el=>{ if(el.id) data[el.id]=el.value; });
+    data._computed={ targetCal:$('targetCal').textContent };
+    localStorage.setItem(LS, JSON.stringify(data));
+    if(notify) alert('Saved to this browser.');
+  }
+  function loadAll(){
+    const raw=localStorage.getItem(LS); if(!raw) return;
+    try{
+      const data=JSON.parse(raw);
+      Object.keys(data).forEach(k=>{ if(k==='_computed') return; const el=$(k); if(el) el.value=data[k]; });
+      if(data._computed?.targetCal) $('targetCal').textContent=data._computed.targetCal;
+    }catch(e){ console.warn('load failed', e); }
+  }
+  function clearAll(){
+    if(!confirm('Clear all saved data?')) return;
+    localStorage.removeItem(LS);
+    document.querySelectorAll('input, select').forEach(el=>{ if(el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; });
+    calcAll();
+  }
+  function exportData(){
+    const raw=localStorage.getItem(LS)||'{}';
+    const blob=new Blob([raw],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='elevate_export.json'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function importData(file){
+    const r=new FileReader();
+    r.onload=()=>{ localStorage.setItem(LS, r.result); loadAll(); calcAll(); alert('Import successful'); };
+    r.readAsText(file);
+  }
+
+  // EVENTS
+  document.querySelectorAll('input, select').forEach(el=>{
+    el.addEventListener('input', ()=>{ clearTimeout(window._to); window._to=setTimeout(()=>saveAll(false),600); calcAll(); });
+    el.addEventListener('change', ()=>{ clearTimeout(window._to); window._to=setTimeout(()=>saveAll(false),600); calcAll(); });
+  });
+  $('saveBtn').addEventListener('click', ()=>saveAll(true));
+  $('clearBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', ()=>$('fileImport').click());
+  $('fileImport').addEventListener('change', e=>{ if(e.target.files[0]) importData(e.target.files[0]); });
+  $('printBtn').addEventListener('click', ()=>window.print());
+  ['pMode','cMode','fMode'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('change', updateMacros); });
+
+  // INIT
+  loadAll();
+  calcAll();
+})();
+</script>
 </body>
 </html>
