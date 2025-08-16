@@ -436,3 +436,93 @@
 </script>
 </body>
 </html>
+<script>
+function switchTab(tabId) {
+  document.querySelectorAll('.sheet-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+}
+
+function calculateAll() {
+  let age = parseInt(document.getElementById("age").value) || 0;
+  let height = parseFloat(document.getElementById("height").value) || 0;
+  let weight = parseFloat(document.getElementById("weight").value) || 0;
+  let gender = document.getElementById("gender").value;
+  let activity = parseFloat(document.getElementById("activityLevel").value);
+  let bodyFat = parseFloat(document.getElementById("bodyFat").value) || 0;
+
+  // BMR
+  let bmr = (gender === "male") 
+    ? 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+    : 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+  document.getElementById("bmrResult").innerText = Math.round(bmr);
+
+  // TDEE
+  let tdee = bmr * activity;
+  document.getElementById("tdeeResult").innerText = Math.round(tdee);
+
+  // Adjustment
+  let adj = parseInt(document.getElementById("calorieAdjustment").value);
+  let target = tdee + adj;
+  document.getElementById("targetCalories").innerText = Math.round(target);
+  document.getElementById("bmrTarget").innerText = Math.round(target);
+
+  // BMI
+  let bmi = (height > 0) ? weight / ((height/100)**2) : 0;
+  document.getElementById("bmiResult").innerText = bmi.toFixed(1);
+  document.getElementById("bmiCategory").innerText = (bmi < 18.5) ? "Underweight" : (bmi < 25) ? "Normal" : (bmi < 30) ? "Overweight" : "Obese";
+
+  // Lean/Fat mass
+  let lean = weight * (1 - bodyFat/100);
+  let fat = weight * (bodyFat/100);
+  document.getElementById("leanMass").innerText = lean.toFixed(1);
+  document.getElementById("fatMass").innerText = fat.toFixed(1);
+
+  updateMacros();
+}
+
+function updateMacros() {
+  let target = parseInt(document.getElementById("targetCalories").innerText) || 0;
+  let p = parseInt(document.getElementById("proteinPercent").value) || 0;
+  let c = parseInt(document.getElementById("carbPercent").value) || 0;
+  let f = parseInt(document.getElementById("fatPercent").value) || 0;
+
+  // Protein
+  let pcals = target * (p/100), pgrams = pcals/4;
+  document.getElementById("proteinCals").innerText = Math.round(pcals);
+  document.getElementById("proteinGrams").innerText = Math.round(pgrams);
+
+  // Carbs
+  let ccals = target * (c/100), cgrams = ccals/4;
+  document.getElementById("carbCals").innerText = Math.round(ccals);
+  document.getElementById("carbGrams").innerText = Math.round(cgrams);
+
+  // Fats
+  let fcals = target * (f/100), fgrams = fcals/9;
+  document.getElementById("fatCals").innerText = Math.round(fcals);
+  document.getElementById("fatGrams").innerText = Math.round(fgrams);
+
+  // Totals
+  document.getElementById("totalPercent").innerText = (p+c+f)+"%";
+  document.getElementById("totalCals").innerText = Math.round(pcals+ccals+fcals);
+
+  // Chart
+  if(window.macroChart) window.macroChart.destroy();
+  let ctx = document.getElementById("macroChart").getContext("2d");
+  window.macroChart = new Chart(ctx,{
+    type:"pie",
+    data:{
+      labels:["Protein","Carbs","Fat"],
+      datasets:[{data:[pgrams,cgrams,fgrams], backgroundColor:["#388e3c","#fbc02d","#c62828"]}]
+    }
+  });
+}
+
+function updateProgress() {
+  let cw = parseFloat(document.getElementById("currentWeight").value)||0;
+  let gw = parseFloat(document.getElementById("goalWeight").value)||0;
+  document.getElementById("weightDifference").innerText = (gw-cw).toFixed(1);
+  document.getElementById("weightProgress").innerText = (cw && gw)? ((cw/gw)*100).toFixed(0)+"%":"0%";
+}
+</script>
