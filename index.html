@@ -1,13 +1,163 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elevate Fitness Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    body {
+      font-family: 'Calibri', Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    .excel-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .excel-header {
+      background: #004d40; /* Elevate green */
+      color: #fbc02d;     /* Elevate gold */
+      padding: 20px;
+      text-align: center;
+      border-bottom: 3px solid #00251a;
+    }
+    .excel-tabs {
+      background: #eeeeee;
+      display: flex;
+      border-bottom: 2px solid #ccc;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: #f2f2f2;
+      border-right: 1px solid #ccc;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: bold;
+    }
+    .tab.active {
+      background: white;
+      border-bottom: 2px solid white;
+      margin-bottom: -2px;
+    }
+    .tab:hover {
+      background: #e0e0e0;
+    }
+    .sheet-content { display: none; padding: 20px; }
+    .sheet-content.active { display: block; }
+    .excel-grid {
+      display: grid;
+      grid-template-columns: 150px 200px 150px 200px 150px 200px;
+      gap: 2px;
+      background: #e0e0e0;
+      border: 2px solid #a6a6a6;
+      margin-bottom: 30px;
+    }
+    .grid-cell {
+      background: white;
+      border: 1px solid #d4d4d4;
+      padding: 8px;
+      font-size: 11px;
+      min-height: 25px;
+      display: flex;
+      align-items: center;
+    }
+    .header-cell {
+      background: #004d40;
+      color: #fbc02d;
+      font-weight: bold;
+      text-align: center;
+      justify-content: center;
+    }
+    .label-cell {
+      background: #c8e6c9;
+      font-weight: bold;
+      border-right: 2px solid #004d40;
+    }
+    .input-cell input, .input-cell select {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      padding: 2px;
+    }
+    .formula-cell { background: #e2efda; font-weight: bold; color: #0d5f0d; }
+    .result-cell { background: #fff2cc; font-weight: bold; color: #7f6000; text-align: center; justify-content: center; }
+    .section-title {
+      background: #004d40;
+      color: #fbc02d;
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px 0 10px 0;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Elevate Fitness Tracker</h1>
-  <p>This is your hosted tracker file. Once uploaded to GitHub Pages, clients can access it via a link.</p>
+  <div class="excel-container">
+    <div class="excel-header">
+      <h1>🏋️ Elevate Fitness Tracker</h1>
+      <p>Professional Client Management System</p>
+    </div>
+
+    <div class="excel-tabs">
+      <div class="tab active" onclick="switchTab('client-info')">Client Info</div>
+      <div class="tab" onclick="switchTab('calculations')">BMR & TDEE</div>
+      <div class="tab" onclick="switchTab('macros')">Macros</div>
+      <div class="tab" onclick="switchTab('measurements')">Measurements</div>
+      <div class="tab" onclick="switchTab('progress')">Progress</div>
+    </div>
+
+    <!-- Example first tab -->
+    <div id="client-info" class="sheet-content active">
+      <div class="section-title">Client Information</div>
+      <div class="excel-grid">
+        <div class="grid-cell header-cell">Field</div>
+        <div class="grid-cell header-cell">Value</div>
+        <div class="grid-cell label-cell">Name</div>
+        <div class="grid-cell input-cell"><input type="text" id="clientName"></div>
+        <div class="grid-cell label-cell">Age</div>
+        <div class="grid-cell input-cell"><input type="number" id="age"></div>
+        <div class="grid-cell label-cell">Gender</div>
+        <div class="grid-cell input-cell">
+          <select id="gender"><option>Male</option><option>Female</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div id="calculations" class="sheet-content">
+      <div class="section-title">BMR & TDEE</div>
+      <p>Formulas and results will go here…</p>
+    </div>
+
+    <div id="macros" class="sheet-content">
+      <div class="section-title">Macros</div>
+      <p>Macro planner content here…</p>
+    </div>
+
+    <div id="measurements" class="sheet-content">
+      <div class="section-title">Measurements</div>
+      <p>Tracking table here…</p>
+    </div>
+
+    <div id="progress" class="sheet-content">
+      <div class="section-title">Progress</div>
+      <p>Progress tracking content here…</p>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.sheet-content').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
 </body>
 </html>
