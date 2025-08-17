@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Elevate Tracker — PWA (Embedded Icon)</title>
+<title>Elevate Tracker — Brand Tabs + Fixed Icon</title>
 
-<!-- iOS full-screen + title -->
+<!-- iOS full-screen -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Elevate Tracker">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0b0f">
 
-<!-- Theme color -->
-<meta name="theme-color" content="#0a1a2b">
-
-<!-- We’ll inject the manifest + icons at runtime (all embedded / no files) -->
+<!-- Will be filled at runtime with embedded data URLs -->
 <link id="dyn-manifest" rel="manifest">
 <link id="dyn-apple-icon" rel="apple-touch-icon">
 <link id="dyn-favicon" rel="icon" type="image/png">
@@ -23,80 +21,112 @@
 
 <style>
   :root{
-    /* Elevate navy + metallic gold gradient */
-    --navy:#0a1a2b;
-    --navy-2:#06202f;
-    --gold:#f3c14b;
-    --gold-2:#ffdf8a;
-    --green:#004d40; /* for some charts and accents already used in tracker */
-    --ink:#222; --muted:#666;
-    --bg:#f6f6f6; --grid:#e0e0e0; --card:#ffffff; --line:#e6e6e6;
+    /* Brand */
+    --black:#0b0b0f;             /* brand near-black */
+    --navy:#12172a;              /* deep navy */
+    --navy-2:#0d1224;            /* darker navy */
+    --gold:#f7c654;              /* base gold */
+    --gold-2:#dba32d;            /* deeper gold */
+    --ink:#1b1e28; 
+    --bg:#f5f6fa;
+    --card:#ffffff; 
+    --line:#e7e8ee; 
+    --grid:#e9e9ef;
   }
-  *{box-sizing:border-box}
-  body{font-family:Inter,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
 
-  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:12px;
-        box-shadow:0 10px 28px rgba(0,0,0,.08);overflow:hidden}
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
+
+  /* Frame */
+  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:14px;
+        box-shadow:0 16px 40px rgba(0,0,0,.10);overflow:hidden}
   .head{
     background:linear-gradient(180deg,var(--navy),var(--navy-2));
-    color:var(--gold);
-    padding:20px 16px;border-bottom:4px solid #03121f;text-align:center
+    color:#fff;padding:22px 16px;border-bottom:4px solid #060a18;text-align:center;position:relative
   }
-  .head h1{margin:0;font-weight:800;letter-spacing:.2px}
-  .head .sub{color:#fff;opacity:.9;margin-top:6px}
+  .head h1{margin:0;font-weight:900;letter-spacing:.3px}
+  .head .sub{opacity:.9;margin-top:6px}
+  .brand-dot{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:8px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-2)); box-shadow:0 6px 18px rgba(219,163,45,.4)}
 
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:#eef1ee;border-bottom:2px solid #ddd}
-  .tab{-webkit-tap-highlight-color:transparent;padding:10px 14px;background:#fff;color:#123;border:1px solid #d6d6d6;border-radius:999px;
-       font-weight:800;cursor:pointer;user-select:none;transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease}
-  .tab:hover{background:#fafafa}
+  /* Tabs – black background + gold gradient text */
+  .tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:#eef0f5;border-bottom:2px solid #dde0ea}
+  .tab{
+    -webkit-tap-highlight-color:transparent;
+    padding:10px 16px;
+    background:var(--black);
+    border:1px solid #3a3a44;
+    border-radius:999px;
+    font-weight:900;
+    cursor:pointer;
+    user-select:none;
+    transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease;
+    /* gold gradient text */
+    color:transparent;
+    background-image:
+      linear-gradient(135deg,var(--gold),var(--gold-2)),
+      linear-gradient(var(--black),var(--black));
+    background-clip:text,padding-box;
+    -webkit-background-clip:text,padding-box;
+    -webkit-text-fill-color:transparent;
+  }
+  .tab:hover{box-shadow:0 6px 16px rgba(219,163,45,.20);border-color:#6b5a2a}
   .tab:active{transform:translateY(1px)}
   .tab.active{
-    background:linear-gradient(180deg,var(--gold-2),var(--gold));
-    color:#0a0a0a;border-color:var(--gold);box-shadow:0 10px 20px rgba(251,192,45,.25)
+    border-color:#b38a2a;
+    box-shadow:0 10px 22px rgba(219,163,45,.35), inset 0 0 0 1px rgba(255,255,255,.08);
   }
 
+  /* Panels */
   .sheet{display:none;padding:16px;opacity:0;transform:translateY(4px);transition:opacity .18s ease, transform .18s ease}
   .sheet.active{display:block;opacity:1;transform:none}
-  .section{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
-
-  .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #bdbdbd;margin-bottom:16px}
-  .cell{background:#fff;border:1px solid #ddd;padding:10px;min-height:38px;display:flex;align-items:center;font-size:14px}
-  .label{
-    background:linear-gradient(180deg,#e9f5eb,#d2ead6);
-    border-right:2px solid var(--navy);font-weight:700
+  .section{
+    background:linear-gradient(135deg,var(--navy),#1a213a);
+    color:transparent;-webkit-background-clip:text;background-clip:text;
+    padding:10px;text-align:center;margin:12px 0;font-weight:900;font-size:20px
   }
-  .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
+  .section:after{content:"";display:block;height:3px;margin:10px auto 0;width:120px;border-radius:3px;
+    background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+
+  /* Grid */
+  .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #ccd0dd;margin-bottom:16px;border-radius:10px;overflow:hidden}
+  .cell{background:#fff;border:1px solid #e5e7f1;padding:10px;min-height:40px;display:flex;align-items:center;font-size:14px}
+  .label{background:#f1f5ff;border-right:2px solid #c7cee3;font-weight:800;color:#1e2540}
+  .result{background:#fff7da;font-weight:900;color:#6b5200;justify-content:center}
   input,select,textarea{width:100%;border:none;background:transparent;font-size:14px;outline:none}
   textarea{min-height:60px;resize:vertical}
 
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
-  .cards{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin:12px 0}
-  .calc-card{
-    border:2px solid var(--gold);border-radius:12px;text-align:center;padding:14px;font-weight:800;
-    background:linear-gradient(180deg,#fff, #fffdf4)
-  }
-  .calc-card .value{display:block;color:var(--navy);font-size:28px;margin-top:6px}
+  /* Cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:12px 0}
+  .calc-card{border:2px solid transparent;border-radius:12px;text-align:center;padding:14px;font-weight:900;background:#fff;position:relative}
+  .calc-card:before{content:"";position:absolute;inset:0;border-radius:12px;padding:2px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude}
+  .calc-card .value{display:block;color:var(--navy);font-size:26px;margin-top:6px}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .tight{max-width:940px;margin:0 auto}
+  .tight{max-width:960px;margin:0 auto}
 
   table{width:100%;border-collapse:collapse}
-  th{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--gold);padding:10px}
-  td{border:1px solid #e6e6e6;padding:8px;text-align:center}
+  th{background:linear-gradient(135deg,var(--navy),#1a213a);color:#ffd880;padding:10px}
+  td{border:1px solid #e6e8f2;padding:8px;text-align:center}
 
   .macro-row{display:grid;grid-template-columns:140px 1fr 140px 1fr 140px 1fr;gap:10px;margin:10px 0}
-  .macro-row label{display:flex;align-items:center;font-weight:700}
-  .macro-row input{border:1px solid #d6d6d6;border-radius:6px;padding:8px;background:#fff}
+  .macro-row label{display:flex;align-items:center;font-weight:800;color:#1f2436}
+  .macro-row input{border:1px solid #d6dae6;border-radius:8px;padding:10px;background:#fff}
   .macro-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-  .summary-box{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:10px;text-align:center}
-  .summary-box .big{display:block;font-size:18px;font-weight:800;color:#004d40;margin-top:6px}
-  .macro-note{font-size:12px;color:#555;margin-top:6px;text-align:center}
+  .summary-box{background:#fafbff;border:1px solid #e6e8f2;border-radius:12px;padding:12px;text-align:center}
+  .summary-box .big{display:block;font-size:18px;font-weight:900;color:#1e2540;margin-top:6px}
+  .macro-note{font-size:12px;color:#5b6070;margin-top:6px;text-align:center}
 
   .weightlog{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin:10px 0}
-  .weightlog input{border:1px solid #d6d6d6;border-radius:6px;padding:8px;background:#fff}
-  .btn{padding:9px 14px;border:1px solid var(--navy);background:#fff;border-radius:8px;font-weight:700;cursor:pointer}
-  .btn:hover{background:#f8fbff}
+  .weightlog input{border:1px solid #d6dae6;border-radius:8px;padding:10px;background:#fff}
 
-  .foot{padding:10px;text-align:center;color:#666;border-top:1px solid #eee;font-size:12px;background:#fafafa}
+  .btn{padding:10px 16px;border:0;background:linear-gradient(135deg,var(--gold),var(--gold-2));
+       color:#0a0c14;border-radius:10px;font-weight:900;cursor:pointer;box-shadow:0 10px 18px rgba(219,163,45,.25)}
+  .btn:hover{filter:brightness(1.03)}
+
+  .foot{padding:12px;text-align:center;color:#697084;border-top:1px solid #e8eaf3;font-size:12px;background:#fafbff}
 
   @media(max-width:1100px){
     .grid{grid-template-columns:1fr 1fr}
@@ -112,6 +142,7 @@
 <body>
 <div class="wrap" role="application" aria-label="Elevate Tracker">
   <div class="head">
+    <span class="brand-dot"></span>
     <h1>Elevate Tracker</h1>
     <div class="sub">BMR • BMI • Body Composition • Macros • Measurements • Progress • Client Profile</div>
   </div>
@@ -129,7 +160,7 @@
 
   <!-- BMR (+ NEAT) -->
   <section id="bmr" class="sheet active tight" role="tabpanel" aria-label="BMR">
-    <div class="section">Basal Metabolic Rate (Mifflin–St Jeor) • NEAT • Daily Targets</div>
+    <div class="section">Basal Metabolic Rate (Mifflin–St Jeor) • Daily Targets • NEAT</div>
     <div class="grid">
       <div class="cell label">Age (years)</div><div class="cell"><input id="bmr_age" type="number" min="10" step="1" placeholder="30"></div>
       <div class="cell label">Gender</div><div class="cell">
@@ -309,7 +340,7 @@
   <section id="profile" class="sheet tight" role="tabpanel" aria-label="Client Profile">
     <div class="section">CLIENT PROFILE & ASSESSMENT</div>
     <div class="card">
-      <h3>Personal Information</h3>
+      <h3 style="margin:0 0 8px 0;color:#1d2340">Personal Information</h3>
       <div class="grid">
         <div class="cell label">Full Name</div><div class="cell"><input id="profile_fullname" type="text" placeholder="First & Last name"></div>
         <div class="cell label">Age</div><div class="cell"><input id="profile_age" type="number" min="10" step="1" placeholder="Years"></div>
@@ -326,7 +357,6 @@
         <div class="cell label">Email</div><div class="cell"><input id="profile_email" type="email" placeholder="name@example.com"></div>
         <div class="cell label">Emergency Contact</div><div class="cell"><input id="profile_emergency" type="text" placeholder="Name & phone"></div>
       </div>
-
       <div class="grid">
         <div class="cell label">Medical History & Conditions</div><div class="cell"><textarea id="profile_medical" placeholder="e.g., asthma, hypertension, surgeries"></textarea></div>
         <div class="cell label">Medications & Supplements</div><div class="cell"><textarea id="profile_meds" placeholder="List all current meds/supps"></textarea></div>
@@ -334,20 +364,22 @@
         <div class="cell label">Fitness Experience Level</div>
         <div class="cell"><select id="profile_experience"><option value="">Select…</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
         <div class="cell label">Lifestyle — Job Type</div><div class="cell"><input id="profile_job" type="text" placeholder="e.g., desk-based, manual labour"></div>
-        <div class="cell label">Lifestyle — Stress Level</div><div class="cell"><select id="profile_stress"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option></select></div>
-        <div class="cell label">Sleep Quality</div><div class="cell"><select id="profile_sleep_quality"><option value="">Select…</option><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option></select></div>
+        <div class="cell label">Lifestyle — Stress Level</div>
+        <div class="cell"><select id="profile_stress"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option></select></div>
+        <div class="cell label">Sleep Quality</div>
+        <div class="cell"><select id="profile_sleep_quality"><option value="">Select…</option><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option></select></div>
         <div class="cell label">Sleep Hours (avg)</div><div class="cell"><input id="profile_sleep_hours" type="number" min="0" step="0.5" placeholder="e.g., 7.5"></div>
       </div>
     </div>
-
     <div class="card" style="margin-top:12px">
-      <h3>Initial Assessment</h3>
+      <h3 style="margin:0 0 8px 0;color:#1d2340">Initial Assessment</h3>
       <div class="grid">
         <div class="cell label">Fitness Goals — Primary</div><div class="cell"><textarea id="profile_goal_primary" placeholder="Main objective"></textarea></div>
         <div class="cell label">Fitness Goals — Secondary</div><div class="cell"><textarea id="profile_goal_secondary" placeholder="Additional objectives"></textarea></div>
         <div class="cell label">Timeline — Start Date</div><div class="cell"><input id="profile_start_date" type="date"></div>
         <div class="cell label">Timeline — Target Date</div><div class="cell"><input id="profile_target_date" type="date"></div>
-        <div class="cell label">Motivation Level</div><div class="cell"><select id="profile_motivation"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option><option>Very High</option></select></div>
+        <div class="cell label">Motivation Level</div>
+        <div class="cell"><select id="profile_motivation"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option><option>Very High</option></select></div>
         <div class="cell label">Barriers</div><div class="cell"><textarea id="profile_barriers" placeholder="e.g., time, injury, confidence"></textarea></div>
         <div class="cell label">Preferred Exercise Types</div><div class="cell"><textarea id="profile_preferred" placeholder="e.g., weights, HIIT, running, classes"></textarea></div>
       </div>
@@ -365,7 +397,7 @@
 (()=>{
   const $ = id => document.getElementById(id);
   const N = v => (v===''||v==null)?0:(isFinite(+v)?+v:0);
-  const LS = 'elevate_tracker_full_pwa_v1';
+  const LS = 'elevate_tracker_brand_tabs_v3';
 
   /* ---------- Tabs ---------- */
   const tabbar = document.getElementById('tabbar');
@@ -416,14 +448,14 @@
   }
 
   /* ---------- Charts ---------- */
-  let macroChart=null, mealChart=null, progressChart=null;
+  let macroChart=null, mealChart=null;
   const pieLabelsPlugin = {
     id: 'pieLabels',
     afterDraw(chart) {
       const {ctx} = chart;
-      chart.data.datasets.forEach((dataset, i) => {
+      chart.data.datasets.forEach((dataset) => {
         const total = dataset.data.reduce((a,b)=>a+b,0) || 1;
-        chart.getDatasetMeta(i).data.forEach((arc, index) => {
+        chart.getDatasetMeta(0).data.forEach((arc, index) => {
           const val = dataset.data[index];
           if (!val) return;
           const percent = Math.round((val/total)*100);
@@ -481,6 +513,7 @@
     const useNeat = !!(($('neat_use')||{}).checked);
     const tdee_ref = useNeat ? Math.max(tdee_base, bmr + neat) : tdee_base;
 
+    // Target calories
     const target = Math.max(0, tdee_ref + adj);
 
     // Outputs
@@ -496,6 +529,7 @@
     setTxt('mc_tdee_ref', tdee_ref);
     setTxt('mc_target', target);
     setTxt('mc_neat', neat);
+
     localStorage.setItem('targetCals', target);
 
     // BMI
@@ -510,7 +544,7 @@
     setTxt('bc_lean', lean ? lean.toFixed(1) : '0');
     setTxt('bc_fat', (bcw-(lean||0)) ? (bcw-(lean||0)).toFixed(1) : '0');
 
-    // Macros (P+F editable, C = 100-(P+F))
+    // Macros (P+F editable, C remainder to 100)
     let pPct=N(($('pPct')||{}).value)||0, fPct=N(($('fPct')||{}).value)||0;
     if(pPct<0) pPct=0; if(fPct<0) fPct=0;
     let cPct = 100 - (pPct + fPct);
@@ -523,14 +557,14 @@
     setTxt('pCals', Math.round(pcals)); setTxt('cCals', Math.round(ccals)); setTxt('fCals', Math.round(fcals));
     setTxt('pGr', Math.round(pG)); setTxt('cGr', Math.round(cG)); setTxt('fGr', Math.round(fG));
 
-    // Macro pie
+    // Macro pie with % labels
     const mctx = document.getElementById('macroChart')?.getContext('2d');
     if(mctx){
       if(!macroChart){
         macroChart = new Chart(mctx,{
           type:'pie',
           data:{ labels:['Protein','Fat','Carbs'],
-            datasets:[{ data:[pPct,fPct,cPct], backgroundColor:['#004d40','#fbc02d','#a1887f'] }] },
+            datasets:[{ data:[pPct,fPct,cPct], backgroundColor:['#12172a','#f7c654','#a1887f'] }] },
           options:{ plugins:{ legend:{ position:'bottom' } } },
           plugins:[pieLabelsPlugin]
         });
@@ -559,8 +593,8 @@
       if(!mealChart){
         mealChart=new Chart(mealCtx,{type:'bar',
           data:{labels,datasets:[
-            {label:'Protein kcal',data:pBars,backgroundColor:'#004d40'},
-            {label:'Carbs kcal',data:cBars,backgroundColor:'#fbc02d'},
+            {label:'Protein kcal',data:pBars,backgroundColor:'#12172a'},
+            {label:'Carbs kcal',data:cBars,backgroundColor:'#f7c654'},
             {label:'Fat kcal',data:fBars,backgroundColor:'#a1887f'}]},
           options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}}
         });
@@ -572,7 +606,7 @@
       }
     }
 
-    // Measurement change
+    // Measurements change
     function setChange(prefix,unit){
       const s=N(($(`${prefix}1`)||{}).value);
       const l=N(($(`${prefix}12`)||{}).value)||N(($(`${prefix}8`)||{}).value)||N(($(`${prefix}4`)||{}).value);
@@ -611,7 +645,7 @@
     const data = logs.map(e=>+e.weight);
     if(!window.progressChart && pctx){
       window.progressChart = new Chart(pctx,{type:'line',
-        data:{labels,datasets:[{label:'Weight (kg)',data,borderColor:'#004d40',tension:0.2,fill:false}]},
+        data:{labels,datasets:[{label:'Weight (kg)',data,borderColor:'#12172a',tension:0.2,fill:false}]},
         options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:false}}}});
     }else if(window.progressChart){
       window.progressChart.data.labels = labels;
@@ -693,14 +727,15 @@
     window.location.href=mailto;
   };
 
-  /* ---------- Icon + Manifest + SW (all embedded) ---------- */
-  function createIcon(size=512){
+  /* ---------- Embedded brand icon (“E”) + manifest/icons ---------- */
+  function createBrandIcon(size=512){
     const c=document.createElement('canvas'); c.width=c.height=size;
     const ctx=c.getContext('2d');
 
-    // Rounded navy background
+    // Rounded navy card
+    const bg = '#12172a';
     const r=size*0.18, w=size, h=size;
-    ctx.fillStyle='#0a1a2b';
+    ctx.fillStyle=bg;
     ctx.beginPath();
     ctx.moveTo(r,0); ctx.lineTo(w-r,0); ctx.quadraticCurveTo(w,0,w,r);
     ctx.lineTo(w,h-r); ctx.quadraticCurveTo(w,h,w-r,h);
@@ -708,66 +743,64 @@
     ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
     ctx.closePath(); ctx.fill();
 
-    // Gold gradient symbol (abstract upward arrow/triangle)
+    // Gold gradient
     const grad=ctx.createLinearGradient(0,0,0,h);
-    grad.addColorStop(0,'#ffdf8a');   // light gold
-    grad.addColorStop(1,'#f3c14b');   // deep gold
+    grad.addColorStop(0,'#ffdf8a');   // highlight
+    grad.addColorStop(1,'#f3c14b');   // base gold
     ctx.fillStyle=grad;
 
-    // Triangle
-    const pad=size*0.22;
-    ctx.beginPath();
-    ctx.moveTo(size/2, pad);
-    ctx.lineTo(w-pad, h-pad);
-    ctx.lineTo(pad, h-pad);
-    ctx.closePath();
-    ctx.fill();
+    // Stylised "E": vertical bar + 3 horizontal bars
+    const pad = size*0.22;
+    const barW = size*0.12;
+    const barX = pad;
+    const barY = pad; 
+    const barH = h - pad*2;
 
-    // Inner cut (navy) to create "stylish" chevron
-    ctx.fillStyle='#0a1a2b';
-    const inset=size*0.08;
-    ctx.beginPath();
-    ctx.moveTo(size/2, pad+inset);
-    ctx.lineTo(w-(pad+inset), h-(pad+inset));
-    ctx.lineTo(pad+inset, h-(pad+inset));
-    ctx.closePath();
-    ctx.fill();
+    // vertical bar
+    ctx.fillRect(barX, barY, barW, barH);
 
-    // Gold vertical bar (implies "E"/elevate)
-    ctx.fillStyle=grad;
-    const bw=size*0.10;
-    ctx.fillRect(size/2 - bw/2, h*0.36, bw, h*0.48);
+    // horizontal bars
+    const hW = w - pad*2;
+    const thick = size*0.12;
+    const gap = (barH - thick*3)/2;
+
+    // top
+    ctx.fillRect(barX, barY, hW, thick);
+    // middle (shorter)
+    ctx.fillRect(barX, barY + thick + gap, hW*0.75, thick);
+    // bottom
+    ctx.fillRect(barX, barY + (thick+gap)*2, hW, thick);
 
     return c.toDataURL('image/png');
   }
 
   function injectPWA(){
-    const icon512=createIcon(512);
-    const icon192=createIcon(192);
-    const icon180=createIcon(180);
+    const icon512=createBrandIcon(512);
+    const icon192=createBrandIcon(192);
+    const icon180=createBrandIcon(180);
 
-    // Icons for browser + iOS
-    const apple = document.getElementById('dyn-apple-icon'); apple.setAttribute('href', icon180);
-    const fav = document.getElementById('dyn-favicon'); fav.setAttribute('href', icon192);
+    // Icons for iOS + browser
+    document.getElementById('dyn-apple-icon').setAttribute('href', icon180);
+    document.getElementById('dyn-favicon').setAttribute('href', icon192);
 
-    // Manifest (as blob)
+    // Manifest
     const manifest = {
       name: "Elevate Tracker",
       short_name: "Elevate",
       start_url: "./",
       display: "standalone",
-      background_color: "#0a1a2b",
-      theme_color: "#0a1a2b",
+      background_color: "#0b0b0f",
+      theme_color: "#0b0b0f",
       icons: [
         {src: icon192, sizes: "192x192", type: "image/png"},
-        {src: icon512, sizes: "512x512", type: "image/png"}
+        {src: icon512, sizes: "512x512", type: "image/png", purpose: "maskable any"}
       ]
     };
     const manBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
     const manURL = URL.createObjectURL(manBlob);
     document.getElementById('dyn-manifest').setAttribute('href', manURL);
 
-    // Minimal service worker (embedded) for standalone feel
+    // Optional SW stub
     if ('serviceWorker' in navigator) {
       const swCode = `
         self.addEventListener('install',e=>self.skipWaiting());
@@ -780,7 +813,7 @@
     }
   }
 
-  /* ---------- Listeners + boot ---------- */
+  /* ---------- Listeners & boot ---------- */
   document.addEventListener('input', (e)=>{
     if(!e.target.matches('input,select,textarea')) return;
     syncField(e.target.id);
