@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Elevate Tracker — Brand Tabs + Fixed Icon</title>
+<title>Elevate Tracker — Secure</title>
 
-<!-- iOS full-screen -->
+<!-- iOS / PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Elevate Tracker">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0f">
 
-<!-- Will be filled at runtime with embedded data URLs -->
+<!-- Will be set at runtime with embedded data URLs -->
 <link id="dyn-manifest" rel="manifest">
 <link id="dyn-apple-icon" rel="apple-touch-icon">
 <link id="dyn-favicon" rel="icon" type="image/png">
@@ -21,96 +21,78 @@
 
 <style>
   :root{
-    /* Brand */
-    --black:#0b0b0f;             /* brand near-black */
-    --navy:#12172a;              /* deep navy */
-    --navy-2:#0d1224;            /* darker navy */
-    --gold:#f7c654;              /* base gold */
-    --gold-2:#dba32d;            /* deeper gold */
-    --ink:#1b1e28; 
+    --black:#0b0b0f;
+    --navy:#12172a;
+    --navy-2:#0d1224;
+    --gold:#f7c654;
+    --gold-2:#dba32d;
+    --ink:#1b1e28;
     --bg:#f5f6fa;
-    --card:#ffffff; 
-    --line:#e7e8ee; 
+    --card:#ffffff;
+    --line:#e7e8ee;
     --grid:#e9e9ef;
   }
-
   *{box-sizing:border-box}
   body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
 
-  /* Frame */
-  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:14px;
-        box-shadow:0 16px 40px rgba(0,0,0,.10);overflow:hidden}
-  .head{
-    background:linear-gradient(180deg,var(--navy),var(--navy-2));
-    color:#fff;padding:22px 16px;border-bottom:4px solid #060a18;text-align:center;position:relative
-  }
+  /* Auth gate styling */
+  .gate{max-width:420px;margin:40px auto;padding:20px;border:1px solid #e6e8f2;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+  .gate h2{margin:0 0 12px 0;text-align:center;color:#12172a}
+  .gate .row{display:grid;gap:10px}
+  .gate input{padding:12px;border:1px solid #d6dae6;border-radius:10px}
+  .btn{padding:10px 16px;border:0;background:linear-gradient(135deg,var(--gold),var(--gold-2));
+       color:#0a0c14;border-radius:10px;font-weight:900;cursor:pointer;box-shadow:0 10px 18px rgba(219,163,45,.25)}
+  .btn.alt{background:#12172a;color:#ffd880}
+  .msg{color:#b00020;font-size:12px;min-height:18px}
+
+  /* Tracker shell */
+  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.10);overflow:hidden}
+  .head{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:#fff;padding:22px 16px;border-bottom:4px solid #060a18;text-align:center;position:relative}
   .head h1{margin:0;font-weight:900;letter-spacing:.3px}
   .head .sub{opacity:.9;margin-top:6px}
-  .brand-dot{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:8px;
-    background:linear-gradient(135deg,var(--gold),var(--gold-2)); box-shadow:0 6px 18px rgba(219,163,45,.4)}
+  .brand-dot{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-2)); box-shadow:0 6px 18px rgba(219,163,45,.4)}
 
-  /* Tabs – black background + gold gradient text */
+  /* Tabs: black background + gold gradient text */
   .tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:#eef0f5;border-bottom:2px solid #dde0ea}
   .tab{
     -webkit-tap-highlight-color:transparent;
-    padding:10px 16px;
-    background:var(--black);
-    border:1px solid #3a3a44;
-    border-radius:999px;
-    font-weight:900;
-    cursor:pointer;
-    user-select:none;
-    transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease;
-    /* gold gradient text */
+    padding:10px 16px;background:var(--black);border:1px solid #3a3a44;border-radius:999px;
+    font-weight:900;cursor:pointer;user-select:none;transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease;
     color:transparent;
-    background-image:
-      linear-gradient(135deg,var(--gold),var(--gold-2)),
-      linear-gradient(var(--black),var(--black));
-    background-clip:text,padding-box;
-    -webkit-background-clip:text,padding-box;
-    -webkit-text-fill-color:transparent;
+    background-image:linear-gradient(135deg,var(--gold),var(--gold-2)), linear-gradient(var(--black),var(--black));
+    background-clip:text,padding-box; -webkit-background-clip:text,padding-box; -webkit-text-fill-color:transparent;
   }
   .tab:hover{box-shadow:0 6px 16px rgba(219,163,45,.20);border-color:#6b5a2a}
   .tab:active{transform:translateY(1px)}
-  .tab.active{
-    border-color:#b38a2a;
-    box-shadow:0 10px 22px rgba(219,163,45,.35), inset 0 0 0 1px rgba(255,255,255,.08);
-  }
+  .tab.active{border-color:#b38a2a;box-shadow:0 10px 22px rgba(219,163,45,.35), inset 0 0 0 1px rgba(255,255,255,.08)}
 
-  /* Panels */
+  /* Panels & sections */
   .sheet{display:none;padding:16px;opacity:0;transform:translateY(4px);transition:opacity .18s ease, transform .18s ease}
   .sheet.active{display:block;opacity:1;transform:none}
-  .section{
-    background:linear-gradient(135deg,var(--navy),#1a213a);
-    color:transparent;-webkit-background-clip:text;background-clip:text;
-    padding:10px;text-align:center;margin:12px 0;font-weight:900;font-size:20px
-  }
-  .section:after{content:"";display:block;height:3px;margin:10px auto 0;width:120px;border-radius:3px;
-    background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+  .section{background:linear-gradient(135deg,var(--navy),#1a213a);color:transparent;-webkit-background-clip:text;background-clip:text;padding:10px;text-align:center;margin:12px 0;font-weight:900;font-size:20px}
+  .section:after{content:"";display:block;height:3px;margin:10px auto 0;width:120px;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
 
-  /* Grid */
+  /* Grids and tables */
   .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #ccd0dd;margin-bottom:16px;border-radius:10px;overflow:hidden}
   .cell{background:#fff;border:1px solid #e5e7f1;padding:10px;min-height:40px;display:flex;align-items:center;font-size:14px}
   .label{background:#f1f5ff;border-right:2px solid #c7cee3;font-weight:800;color:#1e2540}
   .result{background:#fff7da;font-weight:900;color:#6b5200;justify-content:center}
   input,select,textarea{width:100%;border:none;background:transparent;font-size:14px;outline:none}
   textarea{min-height:60px;resize:vertical}
-
-  /* Cards */
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:12px 0}
-  .calc-card{border:2px solid transparent;border-radius:12px;text-align:center;padding:14px;font-weight:900;background:#fff;position:relative}
-  .calc-card:before{content:"";position:absolute;inset:0;border-radius:12px;padding:2px;
-    background:linear-gradient(135deg,var(--gold),var(--gold-2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude}
-  .calc-card .value{display:block;color:var(--navy);font-size:26px;margin-top:6px}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .tight{max-width:960px;margin:0 auto}
-
   table{width:100%;border-collapse:collapse}
   th{background:linear-gradient(135deg,var(--navy),#1a213a);color:#ffd880;padding:10px}
   td{border:1px solid #e6e8f2;padding:8px;text-align:center}
 
+  /* Cards / layout */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:12px 0}
+  .calc-card{border:2px solid transparent;border-radius:12px;text-align:center;padding:14px;font-weight:900;background:#fff;position:relative}
+  .calc-card:before{content:"";position:absolute;inset:0;border-radius:12px;padding:2px;background:linear-gradient(135deg,var(--gold),var(--gold-2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .calc-card .value{display:block;color:var(--navy);font-size:26px;margin-top:6px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .tight{max-width:960px;margin:0 auto}
+
+  /* Macros UI */
   .macro-row{display:grid;grid-template-columns:140px 1fr 140px 1fr 140px 1fr;gap:10px;margin:10px 0}
   .macro-row label{display:flex;align-items:center;font-weight:800;color:#1f2436}
   .macro-row input{border:1px solid #d6dae6;border-radius:8px;padding:10px;background:#fff}
@@ -121,10 +103,6 @@
 
   .weightlog{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin:10px 0}
   .weightlog input{border:1px solid #d6dae6;border-radius:8px;padding:10px;background:#fff}
-
-  .btn{padding:10px 16px;border:0;background:linear-gradient(135deg,var(--gold),var(--gold-2));
-       color:#0a0c14;border-radius:10px;font-weight:900;cursor:pointer;box-shadow:0 10px 18px rgba(219,163,45,.25)}
-  .btn:hover{filter:brightness(1.03)}
 
   .foot{padding:12px;text-align:center;color:#697084;border-top:1px solid #e8eaf3;font-size:12px;background:#fafbff}
 
@@ -140,268 +118,326 @@
 </style>
 </head>
 <body>
-<div class="wrap" role="application" aria-label="Elevate Tracker">
-  <div class="head">
-    <span class="brand-dot"></span>
-    <h1>Elevate Tracker</h1>
-    <div class="sub">BMR • BMI • Body Composition • Macros • Measurements • Progress • Client Profile</div>
+
+<!-- ===================== AUTH GATE (Firebase) ===================== -->
+<div id="auth-gate" class="gate" role="region" aria-label="Sign in">
+  <h2>Elevate — Sign in</h2>
+  <div class="row">
+    <input id="auth-email" type="email" placeholder="Email">
+    <input id="auth-pass" type="password" placeholder="Password">
+    <button id="auth-login" class="btn">Sign in</button>
+    <button id="auth-register" class="btn alt">Create account</button>
+    <div id="auth-msg" class="msg"></div>
   </div>
-
-  <!-- Tabs -->
-  <div class="tabs" id="tabbar" role="tablist" aria-label="Tracker Tabs">
-    <div class="tab active" data-sheet="bmr" role="tab" aria-selected="true" tabindex="0">BMR</div>
-    <div class="tab" data-sheet="bmi" role="tab" aria-selected="false" tabindex="-1">BMI</div>
-    <div class="tab" data-sheet="bodycomp" role="tab" aria-selected="false" tabindex="-1">Body Comp</div>
-    <div class="tab" data-sheet="macros" role="tab" aria-selected="false" tabindex="-1">Macros</div>
-    <div class="tab" data-sheet="meas" role="tab" aria-selected="false" tabindex="-1">Measurements</div>
-    <div class="tab" data-sheet="prog" role="tab" aria-selected="false" tabindex="-1">Progress</div>
-    <div class="tab" data-sheet="profile" role="tab" aria-selected="false" tabindex="-1">Client Profile</div>
-  </div>
-
-  <!-- BMR (+ NEAT) -->
-  <section id="bmr" class="sheet active tight" role="tabpanel" aria-label="BMR">
-    <div class="section">Basal Metabolic Rate (Mifflin–St Jeor) • Daily Targets • NEAT</div>
-    <div class="grid">
-      <div class="cell label">Age (years)</div><div class="cell"><input id="bmr_age" type="number" min="10" step="1" placeholder="30"></div>
-      <div class="cell label">Gender</div><div class="cell">
-        <select id="bmr_gender"><option value="male">Male</option><option value="female">Female</option></select>
-      </div>
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number" step="0.1" placeholder="175"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number" step="0.1" placeholder="75.0"></div>
-
-      <div class="cell label">Activity Level</div>
-      <div class="cell">
-        <select id="bmr_activity">
-          <option value="1.2">Sedentary</option>
-          <option value="1.375">Light</option>
-          <option value="1.55" selected>Moderate</option>
-          <option value="1.725">Active</option>
-          <option value="1.9">Very Active</option>
-        </select>
-      </div>
-      <div class="cell label">Calorie Adjustment</div>
-      <div class="cell">
-        <select id="bmr_adjust">
-          <option value="-500">-500 (Cut)</option>
-          <option value="-300">-300</option>
-          <option value="-200">-200</option>
-          <option value="0" selected>0 (Maintain)</option>
-          <option value="200">+200</option>
-          <option value="300">+300</option>
-          <option value="500">+500 (Bulk)</option>
-        </select>
-      </div>
-
-      <div class="cell label">BMR Result</div><div class="cell result" id="bmr_out">0</div>
-      <div class="cell label">TDEE (BMR × Activity)</div><div class="cell result" id="bmr_tdee">0</div>
-      <div class="cell label">Target Calories</div><div class="cell result" id="bmr_target">0</div>
-
-      <!-- NEAT -->
-      <div class="cell label">Daily Steps (NEAT)</div><div class="cell"><input id="neat_steps" type="number" min="0" step="100" placeholder="e.g., 8000"></div>
-      <div class="cell label">kcal per step</div><div class="cell"><input id="neat_kps" type="number" min="0" step="0.001" value="0.045"></div>
-      <div class="cell label">NEAT kcal/day</div><div class="cell result" id="neat_out">0</div>
-      <div class="cell label">Use NEAT to refine TDEE</div>
-      <div class="cell"><label style="display:flex;align-items:center;gap:8px;"><input id="neat_use" type="checkbox"> <span>Refined TDEE = max(BMR×Activity, BMR+NEAT)</span></label></div>
-
-      <div class="cell label">TDEE (Refined)</div><div class="cell result" id="bmr_tdee_ref">0</div>
-      <div class="cell label">Target (Refined Basis)</div><div class="cell result" id="bmr_target_basis">Baseline</div>
-    </div>
-
-    <div class="cards">
-      <div class="calc-card">🔥 BMR <span class="value" id="mc_bmr">0</span>cal/day</div>
-      <div class="calc-card">🔥 TDEE <span class="value" id="mc_tdee">0</span>cal/day</div>
-      <div class="calc-card">🔥 Target Calories <span class="value" id="mc_target">0</span>cal/day</div>
-      <div class="calc-card">🔥 NEAT <span class="value" id="mc_neat">0</span>cal/day</div>
-      <div class="calc-card">🔥 TDEE (Refined) <span class="value" id="mc_tdee_ref">0</span>cal/day</div>
-    </div>
-  </section>
-
-  <!-- BMI -->
-  <section id="bmi" class="sheet tight" role="tabpanel" aria-label="BMI">
-    <div class="section">Body Mass Index</div>
-    <div class="grid">
-      <div class="cell label">Height (cm)</div><div class="cell"><input id="bmi_height" type="number" step="0.1"></div>
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmi_weight" type="number" step="0.1"></div>
-      <div class="cell label">BMI</div><div class="cell result" id="bmi_out">0</div>
-      <div class="cell label">Category</div><div class="cell result" id="bmi_cat">—</div>
-    </div>
-  </section>
-
-  <!-- Body Comp -->
-  <section id="bodycomp" class="sheet tight" role="tabpanel" aria-label="Body Composition">
-    <div class="section">Body Composition</div>
-    <div class="grid">
-      <div class="cell label">Weight (kg)</div><div class="cell"><input id="bc_weight" type="number" step="0.1"></div>
-      <div class="cell label">Body Fat %</div><div class="cell"><input id="bc_bf" type="number" step="0.1" min="3" max="60"></div>
-      <div class="cell label">Lean Mass</div><div class="cell result" id="bc_lean">0</div>
-      <div class="cell label">Fat Mass</div><div class="cell result" id="bc_fat">0</div>
-    </div>
-  </section>
-
-  <!-- Macros -->
-  <section id="macros" class="sheet tight" role="tabpanel" aria-label="Macros">
-    <div class="section">Macro Planning</div>
-    <div class="macro-row">
-      <label for="pPct">Protein %</label>
-      <input id="pPct" type="number" value="30" min="0" max="100" />
-      <label for="fPct">Fat %</label>
-      <input id="fPct" type="number" value="30" min="0" max="100" />
-      <label for="cPct">Carbs %</label>
-      <input id="cPct" type="number" value="40" min="0" max="100" readonly />
-    </div>
-    <div class="macro-note">Edit <strong>Protein</strong> and <strong>Fat</strong>. <strong>Carbs</strong> auto-fills so total = 100%.</div>
-
-    <div class="macro-summary">
-      <div class="summary-box">Protein (kcal / g)
-        <span class="big"><span id="pCals">0</span> / <span id="pGr">0</span>g</span>
-      </div>
-      <div class="summary-box">Carbs (kcal / g)
-        <span class="big"><span id="cCals">0</span> / <span id="cGr">0</span>g</span>
-      </div>
-      <div class="summary-box">Fat (kcal / g)
-        <span class="big"><span id="fCals">0</span> / <span id="fGr">0</span>g</span>
-      </div>
-    </div>
-
-    <div class="two" style="margin-top:14px">
-      <div class="card"><canvas id="macroChart" style="max-height:340px"></canvas></div>
-      <div class="card">
-        <div class="section" style="margin-top:0">Meal Timing</div>
-        <table>
-          <tr><th>Meal</th><th>Protein (g)</th><th>Carbs (g)</th><th>Fat (g)</th><th>Calories</th></tr>
-          <tr><td>Breakfast</td><td id="m1P">0</td><td id="m1C">0</td><td id="m1F">0</td><td id="m1K">0</td></tr>
-          <tr><td>Lunch</td><td id="m2P">0</td><td id="m2C">0</td><td id="m2F">0</td><td id="m2K">0</td></tr>
-          <tr><td>Dinner</td><td id="m3P">0</td><td id="m3C">0</td><td id="m3F">0</td><td id="m3K">0</td></tr>
-          <tr><td>Snacks</td><td id="sP">0</td><td id="sC">0</td><td id="sF">0</td><td id="sK">0</td></tr>
-        </table>
-      </div>
-    </div>
-    <div class="card" style="margin-top:12px"><canvas id="mealChart" style="max-height:300px"></canvas></div>
-  </section>
-
-  <!-- Measurements -->
-  <section id="meas" class="sheet tight" role="tabpanel" aria-label="Measurements">
-    <div class="section">Body Measurements</div>
-    <div class="card">
-      <table>
-        <tr><th>Measurement</th><th>W1</th><th>W4</th><th>W8</th><th>W12</th><th>Change</th></tr>
-        <tr>
-          <td>Weight (kg)</td>
-          <td><input id="weight1" type="number" step="0.1"></td>
-          <td><input id="weight4" type="number" step="0.1"></td>
-          <td><input id="weight8" type="number" step="0.1"></td>
-          <td><input id="weight12" type="number" step="0.1"></td>
-          <td id="weightChange">0 kg</td>
-        </tr>
-        <tr>
-          <td>Body Fat %</td>
-          <td><input id="bf1" type="number" step="0.1"></td>
-          <td><input id="bf4" type="number" step="0.1"></td>
-          <td><input id="bf8" type="number" step="0.1"></td>
-          <td><input id="bf12" type="number" step="0.1"></td>
-          <td id="bfChange">0%</td>
-        </tr>
-        <tr>
-          <td>Waist (cm)</td>
-          <td><input id="waist1" type="number" step="0.1"></td>
-          <td><input id="waist4" type="number" step="0.1"></td>
-          <td><input id="waist8" type="number" step="0.1"></td>
-          <td><input id="waist12" type="number" step="0.1"></td>
-          <td id="waistChange">0 cm</td>
-        </tr>
-      </table>
-    </div>
-  </section>
-
-  <!-- Progress -->
-  <section id="prog" class="sheet tight" role="tabpanel" aria-label="Progress">
-    <div class="section">Progress</div>
-    <div class="card">
-      <table>
-        <tr><th>Goal</th><th>Current</th><th>Target</th><th>Diff</th></tr>
-        <tr><td>Weight (kg)</td><td><input id="curW" type="number" step="0.1"></td><td><input id="tarW" type="number" step="0.1"></td><td id="diffW">0</td></tr>
-        <tr><td>Body Fat %</td><td><input id="curBF" type="number" step="0.1"></td><td><input id="tarBF" type="number" step="0.1"></td><td id="diffBF">0</td></tr>
-      </table>
-    </div>
-
-    <div class="section" style="margin-top:14px">Daily Weight Log</div>
-    <div class="weightlog">
-      <input id="logDate" type="date" />
-      <input id="logWeight" type="number" step="0.1" placeholder="Today's weight (kg)" />
-      <button class="btn" id="addLog">Save Entry</button>
-    </div>
-    <div class="card">
-      <table id="logTable"><tr><th>Date</th><th>Weight (kg)</th></tr></table>
-    </div>
-    <div class="card" style="margin-top:12px"><canvas id="progressChart"></canvas></div>
-  </section>
-
-  <!-- Client Profile -->
-  <section id="profile" class="sheet tight" role="tabpanel" aria-label="Client Profile">
-    <div class="section">CLIENT PROFILE & ASSESSMENT</div>
-    <div class="card">
-      <h3 style="margin:0 0 8px 0;color:#1d2340">Personal Information</h3>
-      <div class="grid">
-        <div class="cell label">Full Name</div><div class="cell"><input id="profile_fullname" type="text" placeholder="First & Last name"></div>
-        <div class="cell label">Age</div><div class="cell"><input id="profile_age" type="number" min="10" step="1" placeholder="Years"></div>
-        <div class="cell label">Gender</div>
-        <div class="cell">
-          <select id="profile_gender">
-            <option value="">Select…</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other / Prefer not to say</option>
-          </select>
-        </div>
-        <div class="cell label">Phone</div><div class="cell"><input id="profile_phone" type="tel" placeholder="+44…"></div>
-        <div class="cell label">Email</div><div class="cell"><input id="profile_email" type="email" placeholder="name@example.com"></div>
-        <div class="cell label">Emergency Contact</div><div class="cell"><input id="profile_emergency" type="text" placeholder="Name & phone"></div>
-      </div>
-      <div class="grid">
-        <div class="cell label">Medical History & Conditions</div><div class="cell"><textarea id="profile_medical" placeholder="e.g., asthma, hypertension, surgeries"></textarea></div>
-        <div class="cell label">Medications & Supplements</div><div class="cell"><textarea id="profile_meds" placeholder="List all current meds/supps"></textarea></div>
-        <div class="cell label">Injuries & Physical Limitations</div><div class="cell"><textarea id="profile_injuries" placeholder="e.g., lower back pain, shoulder impingement"></textarea></div>
-        <div class="cell label">Fitness Experience Level</div>
-        <div class="cell"><select id="profile_experience"><option value="">Select…</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
-        <div class="cell label">Lifestyle — Job Type</div><div class="cell"><input id="profile_job" type="text" placeholder="e.g., desk-based, manual labour"></div>
-        <div class="cell label">Lifestyle — Stress Level</div>
-        <div class="cell"><select id="profile_stress"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option></select></div>
-        <div class="cell label">Sleep Quality</div>
-        <div class="cell"><select id="profile_sleep_quality"><option value="">Select…</option><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option></select></div>
-        <div class="cell label">Sleep Hours (avg)</div><div class="cell"><input id="profile_sleep_hours" type="number" min="0" step="0.5" placeholder="e.g., 7.5"></div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:12px">
-      <h3 style="margin:0 0 8px 0;color:#1d2340">Initial Assessment</h3>
-      <div class="grid">
-        <div class="cell label">Fitness Goals — Primary</div><div class="cell"><textarea id="profile_goal_primary" placeholder="Main objective"></textarea></div>
-        <div class="cell label">Fitness Goals — Secondary</div><div class="cell"><textarea id="profile_goal_secondary" placeholder="Additional objectives"></textarea></div>
-        <div class="cell label">Timeline — Start Date</div><div class="cell"><input id="profile_start_date" type="date"></div>
-        <div class="cell label">Timeline — Target Date</div><div class="cell"><input id="profile_target_date" type="date"></div>
-        <div class="cell label">Motivation Level</div>
-        <div class="cell"><select id="profile_motivation"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option><option>Very High</option></select></div>
-        <div class="cell label">Barriers</div><div class="cell"><textarea id="profile_barriers" placeholder="e.g., time, injury, confidence"></textarea></div>
-        <div class="cell label">Preferred Exercise Types</div><div class="cell"><textarea id="profile_preferred" placeholder="e.g., weights, HIIT, running, classes"></textarea></div>
-      </div>
-    </div>
-  </section>
-
-  <div style="text-align:center;padding:16px">
-    <button class="btn" onclick="exportDataEmail('')">📧 Export & Email</button>
-  </div>
-
-  <div class="foot">Elevate Tracker • ©</div>
 </div>
 
+<!-- ===================== APP (HIDDEN UNTIL AUTH) ===================== -->
+<div id="app" style="display:none">
+
+  <div class="wrap" role="application" aria-label="Elevate Tracker">
+    <div class="head">
+      <span class="brand-dot"></span>
+      <h1>Elevate Tracker</h1>
+      <div class="sub">BMR • BMI • Body Composition • Macros • Measurements • Progress • Client Profile</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" id="tabbar" role="tablist" aria-label="Tracker Tabs">
+      <div class="tab active" data-sheet="bmr" role="tab" aria-selected="true" tabindex="0">BMR</div>
+      <div class="tab" data-sheet="bmi" role="tab" aria-selected="false" tabindex="-1">BMI</div>
+      <div class="tab" data-sheet="bodycomp" role="tab" aria-selected="false" tabindex="-1">Body Comp</div>
+      <div class="tab" data-sheet="macros" role="tab" aria-selected="false" tabindex="-1">Macros</div>
+      <div class="tab" data-sheet="meas" role="tab" aria-selected="false" tabindex="-1">Measurements</div>
+      <div class="tab" data-sheet="prog" role="tab" aria-selected="false" tabindex="-1">Progress</div>
+      <div class="tab" data-sheet="profile" role="tab" aria-selected="false" tabindex="-1">Client Profile</div>
+    </div>
+
+    <!-- BMR (+ NEAT) -->
+    <section id="bmr" class="sheet active tight" role="tabpanel" aria-label="BMR">
+      <div class="section">Basal Metabolic Rate (Mifflin–St Jeor) • Daily Targets • NEAT</div>
+      <div class="grid">
+        <div class="cell label">Age (years)</div><div class="cell"><input id="bmr_age" type="number" min="10" step="1" placeholder="30"></div>
+        <div class="cell label">Gender</div><div class="cell">
+          <select id="bmr_gender"><option value="male">Male</option><option value="female">Female</option></select>
+        </div>
+        <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number" step="0.1" placeholder="175"></div>
+        <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number" step="0.1" placeholder="75.0"></div>
+
+        <div class="cell label">Activity Level</div>
+        <div class="cell">
+          <select id="bmr_activity">
+            <option value="1.2">Sedentary</option><option value="1.375">Light</option>
+            <option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option>
+          </select>
+        </div>
+        <div class="cell label">Calorie Adjustment</div>
+        <div class="cell">
+          <select id="bmr_adjust">
+            <option value="-500">-500 (Cut)</option><option value="-300">-300</option><option value="-200">-200</option>
+            <option value="0" selected>0 (Maintain)</option><option value="200">+200</option><option value="300">+300</option><option value="500">+500 (Bulk)</option>
+          </select>
+        </div>
+
+        <div class="cell label">BMR Result</div><div class="cell result" id="bmr_out">0</div>
+        <div class="cell label">TDEE (BMR × Activity)</div><div class="cell result" id="bmr_tdee">0</div>
+        <div class="cell label">Target Calories</div><div class="cell result" id="bmr_target">0</div>
+
+        <!-- NEAT -->
+        <div class="cell label">Daily Steps (NEAT)</div><div class="cell"><input id="neat_steps" type="number" min="0" step="100" placeholder="8000"></div>
+        <div class="cell label">kcal per step</div><div class="cell"><input id="neat_kps" type="number" min="0" step="0.001" value="0.045"></div>
+        <div class="cell label">NEAT kcal/day</div><div class="cell result" id="neat_out">0</div>
+        <div class="cell label">Use NEAT to refine TDEE</div>
+        <div class="cell"><label style="display:flex;align-items:center;gap:8px;"><input id="neat_use" type="checkbox"> <span>Refined TDEE = max(BMR×Activity, BMR+NEAT)</span></label></div>
+
+        <div class="cell label">TDEE (Refined)</div><div class="cell result" id="bmr_tdee_ref">0</div>
+        <div class="cell label">Target (Refined Basis)</div><div class="cell result" id="bmr_target_basis">Baseline</div>
+      </div>
+
+      <div class="cards">
+        <div class="calc-card">🔥 BMR <span class="value" id="mc_bmr">0</span>cal/day</div>
+        <div class="calc-card">🔥 TDEE <span class="value" id="mc_tdee">0</span>cal/day</div>
+        <div class="calc-card">🔥 Target Calories <span class="value" id="mc_target">0</span>cal/day</div>
+        <div class="calc-card">🔥 NEAT <span class="value" id="mc_neat">0</span>cal/day</div>
+        <div class="calc-card">🔥 TDEE (Refined) <span class="value" id="mc_tdee_ref">0</span>cal/day</div>
+      </div>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi" class="sheet tight" role="tabpanel" aria-label="BMI">
+      <div class="section">Body Mass Index</div>
+      <div class="grid">
+        <div class="cell label">Height (cm)</div><div class="cell"><input id="bmi_height" type="number" step="0.1"></div>
+        <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmi_weight" type="number" step="0.1"></div>
+        <div class="cell label">BMI</div><div class="cell result" id="bmi_out">0</div>
+        <div class="cell label">Category</div><div class="cell result" id="bmi_cat">—</div>
+      </div>
+    </section>
+
+    <!-- Body Comp -->
+    <section id="bodycomp" class="sheet tight" role="tabpanel" aria-label="Body Composition">
+      <div class="section">Body Composition</div>
+      <div class="grid">
+        <div class="cell label">Weight (kg)</div><div class="cell"><input id="bc_weight" type="number" step="0.1"></div>
+        <div class="cell label">Body Fat %</div><div class="cell"><input id="bc_bf" type="number" step="0.1" min="3" max="60"></div>
+        <div class="cell label">Lean Mass</div><div class="cell result" id="bc_lean">0</div>
+        <div class="cell label">Fat Mass</div><div class="cell result" id="bc_fat">0</div>
+      </div>
+    </section>
+
+    <!-- Macros -->
+    <section id="macros" class="sheet tight" role="tabpanel" aria-label="Macros">
+      <div class="section">Macro Planning</div>
+      <div class="macro-row">
+        <label for="pPct">Protein %</label><input id="pPct" type="number" value="30" min="0" max="100" />
+        <label for="fPct">Fat %</label><input id="fPct" type="number" value="30" min="0" max="100" />
+        <label for="cPct">Carbs %</label><input id="cPct" type="number" value="40" min="0" max="100" readonly />
+      </div>
+      <div class="macro-note">Edit <strong>Protein</strong> and <strong>Fat</strong>. <strong>Carbs</strong> auto-fills so total = 100%.</div>
+
+      <div class="macro-summary">
+        <div class="summary-box">Protein (kcal / g) <span class="big"><span id="pCals">0</span> / <span id="pGr">0</span>g</span></div>
+        <div class="summary-box">Carbs (kcal / g) <span class="big"><span id="cCals">0</span> / <span id="cGr">0</span>g</span></div>
+        <div class="summary-box">Fat (kcal / g) <span class="big"><span id="fCals">0</span> / <span id="fGr">0</span>g</span></div>
+      </div>
+
+      <div class="two" style="margin-top:14px">
+        <div class="card"><canvas id="macroChart" style="max-height:340px"></canvas></div>
+        <div class="card">
+          <div class="section" style="margin-top:0">Meal Timing</div>
+          <table>
+            <tr><th>Meal</th><th>Protein (g)</th><th>Carbs (g)</th><th>Fat (g)</th><th>Calories</th></tr>
+            <tr><td>Breakfast</td><td id="m1P">0</td><td id="m1C">0</td><td id="m1F">0</td><td id="m1K">0</td></tr>
+            <tr><td>Lunch</td><td id="m2P">0</td><td id="m2C">0</td><td id="m2F">0</td><td id="m2K">0</td></tr>
+            <tr><td>Dinner</td><td id="m3P">0</td><td id="m3C">0</td><td id="m3F">0</td><td id="m3K">0</td></tr>
+            <tr><td>Snacks</td><td id="sP">0</td><td id="sC">0</td><td id="sF">0</td><td id="sK">0</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><canvas id="mealChart" style="max-height:300px"></canvas></div>
+    </section>
+
+    <!-- Measurements -->
+    <section id="meas" class="sheet tight" role="tabpanel" aria-label="Measurements">
+      <div class="section">Body Measurements</div>
+      <div class="card">
+        <table>
+          <tr><th>Measurement</th><th>W1</th><th>W4</th><th>W8</th><th>W12</th><th>Change</th></tr>
+          <tr>
+            <td>Weight (kg)</td>
+            <td><input id="weight1" type="number" step="0.1"></td>
+            <td><input id="weight4" type="number" step="0.1"></td>
+            <td><input id="weight8" type="number" step="0.1"></td>
+            <td><input id="weight12" type="number" step="0.1"></td>
+            <td id="weightChange">0 kg</td>
+          </tr>
+          <tr>
+            <td>Body Fat %</td>
+            <td><input id="bf1" type="number" step="0.1"></td>
+            <td><input id="bf4" type="number" step="0.1"></td>
+            <td><input id="bf8" type="number" step="0.1"></td>
+            <td><input id="bf12" type="number" step="0.1"></td>
+            <td id="bfChange">0%</td>
+          </tr>
+          <tr>
+            <td>Waist (cm)</td>
+            <td><input id="waist1" type="number" step="0.1"></td>
+            <td><input id="waist4" type="number" step="0.1"></td>
+            <td><input id="waist8" type="number" step="0.1"></td>
+            <td><input id="waist12" type="number" step="0.1"></td>
+            <td id="waistChange">0 cm</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- Progress -->
+    <section id="prog" class="sheet tight" role="tabpanel" aria-label="Progress">
+      <div class="section">Progress</div>
+      <div class="card">
+        <table>
+          <tr><th>Goal</th><th>Current</th><th>Target</th><th>Diff</th></tr>
+          <tr><td>Weight (kg)</td><td><input id="curW" type="number" step="0.1"></td><td><input id="tarW" type="number" step="0.1"></td><td id="diffW">0</td></tr>
+          <tr><td>Body Fat %</td><td><input id="curBF" type="number" step="0.1"></td><td><input id="tarBF" type="number" step="0.1"></td><td id="diffBF">0</td></tr>
+        </table>
+      </div>
+
+      <div class="section" style="margin-top:14px">Daily Weight Log</div>
+      <div class="weightlog">
+        <input id="logDate" type="date" />
+        <input id="logWeight" type="number" step="0.1" placeholder="Today's weight (kg)" />
+        <button class="btn" id="addLog">Save Entry</button>
+      </div>
+      <div class="card">
+        <table id="logTable"><tr><th>Date</th><th>Weight (kg)</th></tr></table>
+      </div>
+      <div class="card" style="margin-top:12px"><canvas id="progressChart"></canvas></div>
+    </section>
+
+    <!-- Client Profile -->
+    <section id="profile" class="sheet tight" role="tabpanel" aria-label="Client Profile">
+      <div class="section">CLIENT PROFILE & ASSESSMENT</div>
+      <div class="card">
+        <h3 style="margin:0 0 8px 0;color:#1d2340">Personal Information</h3>
+        <div class="grid">
+          <div class="cell label">Full Name</div><div class="cell"><input id="profile_fullname" type="text" placeholder="First & Last name"></div>
+          <div class="cell label">Age</div><div class="cell"><input id="profile_age" type="number" min="10" step="1" placeholder="Years"></div>
+          <div class="cell label">Gender</div>
+          <div class="cell">
+            <select id="profile_gender">
+              <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other / Prefer not to say</option>
+            </select>
+          </div>
+          <div class="cell label">Phone</div><div class="cell"><input id="profile_phone" type="tel" placeholder="+44…"></div>
+          <div class="cell label">Email</div><div class="cell"><input id="profile_email" type="email" placeholder="name@example.com"></div>
+          <div class="cell label">Emergency Contact</div><div class="cell"><input id="profile_emergency" type="text" placeholder="Name & phone"></div>
+        </div>
+        <div class="grid">
+          <div class="cell label">Medical History & Conditions</div><div class="cell"><textarea id="profile_medical" placeholder="e.g., asthma, hypertension, surgeries"></textarea></div>
+          <div class="cell label">Medications & Supplements</div><div class="cell"><textarea id="profile_meds" placeholder="List all current meds/supps"></textarea></div>
+          <div class="cell label">Injuries & Physical Limitations</div><div class="cell"><textarea id="profile_injuries" placeholder="e.g., lower back pain, shoulder impingement"></textarea></div>
+          <div class="cell label">Fitness Experience Level</div>
+          <div class="cell"><select id="profile_experience"><option value="">Select…</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+          <div class="cell label">Lifestyle — Job Type</div><div class="cell"><input id="profile_job" type="text" placeholder="e.g., desk-based, manual labour"></div>
+          <div class="cell label">Lifestyle — Stress Level</div>
+          <div class="cell"><select id="profile_stress"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option></select></div>
+          <div class="cell label">Sleep Quality</div>
+          <div class="cell"><select id="profile_sleep_quality"><option value="">Select…</option><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option></select></div>
+          <div class="cell label">Sleep Hours (avg)</div><div class="cell"><input id="profile_sleep_hours" type="number" min="0" step="0.5" placeholder="e.g., 7.5"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h3 style="margin:0 0 8px 0;color:#1d2340">Initial Assessment</h3>
+        <div class="grid">
+          <div class="cell label">Fitness Goals — Primary</div><div class="cell"><textarea id="profile_goal_primary" placeholder="Main objective"></textarea></div>
+          <div class="cell label">Fitness Goals — Secondary</div><div class="cell"><textarea id="profile_goal_secondary" placeholder="Additional objectives"></textarea></div>
+          <div class="cell label">Timeline — Start Date</div><div class="cell"><input id="profile_start_date" type="date"></div>
+          <div class="cell label">Timeline — Target Date</div><div class="cell"><input id="profile_target_date" type="date"></div>
+          <div class="cell label">Motivation Level</div><div class="cell"><select id="profile_motivation"><option value="">Select…</option><option>Low</option><option>Moderate</option><option>High</option><option>Very High</option></select></div>
+          <div class="cell label">Barriers</div><div class="cell"><textarea id="profile_barriers" placeholder="e.g., time, injury, confidence"></textarea></div>
+          <div class="cell label">Preferred Exercise Types</div><div class="cell"><textarea id="profile_preferred" placeholder="e.g., weights, HIIT, running, classes"></textarea></div>
+        </div>
+      </div>
+    </section>
+
+    <div style="text-align:center;padding:16px">
+      <button class="btn" onclick="exportDataEmail('')">📧 Export & Email</button>
+      <button id="auth-logout" class="btn alt" style="margin-left:8px">Sign out</button>
+    </div>
+
+    <div class="foot">Elevate Tracker • ©</div>
+  </div><!-- /.wrap -->
+
+</div><!-- /#app -->
+
+<!-- ===================== FIREBASE AUTH SCRIPT (MODULE) ===================== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  /* 1) REPLACE WITH YOUR FIREBASE WEB CONFIG (Console → Project settings → General → Your apps → Web app) */
+  const firebaseConfig = {
+    apiKey: "PASTE_API_KEY_HERE",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    // Optional but fine to include:
+    // storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    // messagingSenderId: "XXXX",
+    // appId: "1:XXXX:web:XXXX"
+  };
+
+  /* 2) Init + helpers */
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const $ = s => document.querySelector(s);
+  const gate = $('#auth-gate');
+  const appShell = $('#app');
+  const msg = $('#auth-msg');
+
+  function showGate(show){
+    gate.style.display = show ? 'block' : 'none';
+    appShell.style.display = show ? 'none' : 'block';
+  }
+
+  /* 3) Guard the app with auth */
+  onAuthStateChanged(auth, (user) => {
+    if (user) { showGate(false); msg.textContent=""; }
+    else { showGate(true); }
+  });
+
+  /* 4) Login / Register / Logout */
+  $('#auth-login').addEventListener('click', async ()=>{
+    msg.textContent = "";
+    const email = $('#auth-email').value.trim();
+    const pass = $('#auth-pass').value;
+    try { await signInWithEmailAndPassword(auth, email, pass); }
+    catch(e){ msg.textContent = e.code || 'Login failed'; }
+  });
+
+  $('#auth-register').addEventListener('click', async ()=>{
+    msg.textContent = "";
+    const email = $('#auth-email').value.trim();
+    const pass = $('#auth-pass').value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, pass);
+      // If you want manual approval, uncomment the next two lines:
+      // await signOut(auth);
+      // msg.textContent = "Account created. Awaiting approval.";
+    } catch(e){ msg.textContent = e.code || 'Registration failed'; }
+  });
+
+  $('#auth-logout').addEventListener('click', async ()=>{ await signOut(auth); });
+</script>
+
+<!-- ===================== TRACKER LOGIC (UNCHANGED, RUNS EITHER WAY) ===================== -->
 <script>
 (()=>{
   const $ = id => document.getElementById(id);
   const N = v => (v===''||v==null)?0:(isFinite(+v)?+v:0);
-  const LS = 'elevate_tracker_brand_tabs_v3';
+  const LS = 'elevate_tracker_secure_v1';
 
-  /* ---------- Tabs ---------- */
+  /* Tabs */
   const tabbar = document.getElementById('tabbar');
-  const tabs = [...tabbar.querySelectorAll('.tab')];
+  const tabs = tabbar ? [...tabbar.querySelectorAll('.tab')] : [];
   function show(id){
     document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
     const p = document.getElementById(id); if(p) p.classList.add('active');
@@ -413,13 +449,15 @@
     });
     if(location.hash!=='#'+id) history.replaceState(null,'','#'+id);
   }
-  tabbar.addEventListener('click', e=>{
-    const t = e.target.closest('.tab'); if(!t) return; show(t.dataset.sheet);
-  });
-  const initial=(location.hash||'#bmr').slice(1);
-  show(document.getElementById(initial)?initial:'bmr');
+  if(tabbar){
+    tabbar.addEventListener('click', e=>{
+      const t = e.target.closest('.tab'); if(!t) return; show(t.dataset.sheet);
+    });
+    const initial=(location.hash||'#bmr').slice(1);
+    show(document.getElementById(initial)?initial:'bmr');
+  }
 
-  /* ---------- Persistence ---------- */
+  /* Save/Load */
   function save(){
     const data={};
     document.querySelectorAll('input,select,textarea').forEach(el=>{ if(el.id) data[el.id]=el.value; });
@@ -430,7 +468,7 @@
     Object.keys(data).forEach(k=>{ const el=$(k); if(el) el.value=data[k]; });
   }
 
-  /* ---------- Sync groups across tabs/profile ---------- */
+  /* Sync fields across tabs/profile */
   const syncGroups={
     age:['bmr_age','profile_age'],
     gender:['bmr_gender','profile_gender'],
@@ -447,8 +485,8 @@
     }
   }
 
-  /* ---------- Charts ---------- */
-  let macroChart=null, mealChart=null;
+  /* Charts */
+  let macroChart=null, mealChart=null, progressChart=null;
   const pieLabelsPlugin = {
     id: 'pieLabels',
     afterDraw(chart) {
@@ -460,13 +498,9 @@
           if (!val) return;
           const percent = Math.round((val/total)*100);
           const pos = arc.tooltipPosition();
-          ctx.save();
-          ctx.fillStyle = "#fff";
-          ctx.font = "bold 12px Arial";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(percent+"%", pos.x, pos.y);
-          ctx.restore();
+          ctx.save(); ctx.fillStyle = "#fff"; ctx.font = "bold 12px Arial";
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText(percent+"%", pos.x, pos.y); ctx.restore();
         });
       });
     }
@@ -478,16 +512,12 @@
       const total = ds.data.reduce((a,b)=>a+b,0) || 1;
       return labels.map((l,i)=>({
         text: `${l} — ${Math.round((ds.data[i]/total)*100)}%`,
-        fillStyle: ds.backgroundColor[i],
-        strokeStyle: ds.backgroundColor[i],
-        lineWidth: 0,
-        hidden: false,
-        index: i
+        fillStyle: ds.backgroundColor[i], strokeStyle: ds.backgroundColor[i], lineWidth: 0, hidden: false, index: i
       }));
     };
   }
 
-  /* ---------- BMR math ---------- */
+  /* BMR */
   function bmrCalc(age, gender, h, w){
     if(!(age&&h&&w)) return 0;
     return gender==='male'
@@ -496,27 +526,22 @@
   }
 
   function recalc(){
-    // Inputs
     const age=N(($('bmr_age')||{}).value) || N(($('profile_age')||{}).value);
     const gender=(($('bmr_gender')||{}).value)||(($('profile_gender')||{}).value)||'male';
     const h=N(($('bmr_height')||{}).value), w=N(($('bmr_weight')||{}).value);
     const act=N(($('bmr_activity')||{}).value)||1.55, adj=N(($('bmr_adjust')||{}).value)||0;
 
-    // Core calc
     const bmr = Math.round(bmrCalc(age,gender,h,w) || 0);
     const tdee_base = Math.round((bmr||0) * act);
 
-    // NEAT
     const steps = N(($('neat_steps')||{}).value);
     const kps = N(($('neat_kps')||{}).value || 0.045);
     const neat = Math.round(steps * kps);
     const useNeat = !!(($('neat_use')||{}).checked);
     const tdee_ref = useNeat ? Math.max(tdee_base, bmr + neat) : tdee_base;
 
-    // Target calories
     const target = Math.max(0, tdee_ref + adj);
 
-    // Outputs
     const setTxt=(id,val)=>{ const el=$(id); if(el) el.textContent=val; };
     setTxt('bmr_out', bmr);
     setTxt('bmr_tdee', tdee_base);
@@ -538,13 +563,13 @@
     setTxt('bmi_out', bmi ? bmi.toFixed(1) : '0');
     setTxt('bmi_cat', bmi ? (bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese') : '—');
 
-    // Body Comp
+    // Body comp
     const bcw=N(($('bc_weight')||{}).value || w), bf=N(($('bc_bf')||{}).value || 0);
     const lean = bcw*(1-(bf/100||0));
     setTxt('bc_lean', lean ? lean.toFixed(1) : '0');
     setTxt('bc_fat', (bcw-(lean||0)) ? (bcw-(lean||0)).toFixed(1) : '0');
 
-    // Macros (P+F editable, C remainder to 100)
+    // Macros (P+F set, C remainder to 100)
     let pPct=N(($('pPct')||{}).value)||0, fPct=N(($('fPct')||{}).value)||0;
     if(pPct<0) pPct=0; if(fPct<0) fPct=0;
     let cPct = 100 - (pPct + fPct);
@@ -557,33 +582,24 @@
     setTxt('pCals', Math.round(pcals)); setTxt('cCals', Math.round(ccals)); setTxt('fCals', Math.round(fcals));
     setTxt('pGr', Math.round(pG)); setTxt('cGr', Math.round(cG)); setTxt('fGr', Math.round(fG));
 
-    // Macro pie with % labels
     const mctx = document.getElementById('macroChart')?.getContext('2d');
     if(mctx){
       if(!macroChart){
-        macroChart = new Chart(mctx,{
-          type:'pie',
-          data:{ labels:['Protein','Fat','Carbs'],
-            datasets:[{ data:[pPct,fPct,cPct], backgroundColor:['#12172a','#f7c654','#a1887f'] }] },
-          options:{ plugins:{ legend:{ position:'bottom' } } },
-          plugins:[pieLabelsPlugin]
-        });
+        macroChart = new Chart(mctx,{type:'pie',
+          data:{ labels:['Protein','Fat','Carbs'], datasets:[{ data:[pPct,fPct,cPct], backgroundColor:['#12172a','#f7c654','#a1887f'] }] },
+          options:{ plugins:{ legend:{ position:'bottom' } } }, plugins:[pieLabelsPlugin]});
         setLegendPercents(macroChart);
       }else{
-        macroChart.data.datasets[0].data=[pPct,fPct,cPct];
-        setLegendPercents(macroChart);
-        macroChart.update();
+        macroChart.data.datasets[0].data=[pPct,fPct,cPct]; setLegendPercents(macroChart); macroChart.update();
       }
     }
 
-    // Meal splits (25/30/30/15)
     const S={b:.25,l:.30,d:.30,s:.15}, R=x=>Math.round(x);
     setTxt('m1P', R(pG*S.b)); setTxt('m2P', R(pG*S.l)); setTxt('m3P', R(pG*S.d)); setTxt('sP', R(pG*S.s));
     setTxt('m1C', R(cG*S.b)); setTxt('m2C', R(cG*S.l)); setTxt('m3C', R(cG*S.d)); setTxt('sC', R(cG*S.s));
     setTxt('m1F', R(fG*S.b)); setTxt('m2F', R(fG*S.l)); setTxt('m3F', R(fG*S.d)); setTxt('sF', R(fG*S.s));
     setTxt('m1K', R(target*S.b)); setTxt('m2K', R(target*S.l)); setTxt('m3K', R(target*S.d)); setTxt('sK', R(target*S.s));
 
-    // Meal stacked bars
     const labels=['Breakfast','Lunch','Dinner','Snacks'];
     const pBars=[pG*S.b*4,pG*S.l*4,pG*S.d*4,pG*S.s*4];
     const cBars=[cG*S.b*4,cG*S.l*4,cG*S.d*4,cG*S.s*4];
@@ -599,14 +615,10 @@
           options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}}
         });
       }else{
-        mealChart.data.datasets[0].data=pBars;
-        mealChart.data.datasets[1].data=cBars;
-        mealChart.data.datasets[2].data=fBars;
-        mealChart.update();
+        mealChart.data.datasets[0].data=pBars; mealChart.data.datasets[1].data=cBars; mealChart.data.datasets[2].data=fBars; mealChart.update();
       }
     }
 
-    // Measurements change
     function setChange(prefix,unit){
       const s=N(($(`${prefix}1`)||{}).value);
       const l=N(($(`${prefix}12`)||{}).value)||N(($(`${prefix}8`)||{}).value)||N(($(`${prefix}4`)||{}).value);
@@ -615,7 +627,6 @@
     }
     setChange('weight','kg'); setChange('bf','%'); setChange('waist','cm');
 
-    // Progress numbers
     const curW=N(($('curW')||{}).value)||N(($('weight1')||{}).value)||w;
     const tarW=N(($('tarW')||{}).value);
     const curBF=N(($('curBF')||{}).value)||N(($('bf1')||{}).value)||N(($('bc_bf')||{}).value);
@@ -626,7 +637,7 @@
     renderLogs();
   }
 
-  /* ---------- Weight log + chart ---------- */
+  /* Weight log */
   const logTable = document.getElementById('logTable');
   const pctx=document.getElementById('progressChart')?.getContext('2d');
   function getLogs(){ try{ return JSON.parse(localStorage.getItem('weightLog')||'[]'); }catch(e){ return []; } }
@@ -648,9 +659,7 @@
         data:{labels,datasets:[{label:'Weight (kg)',data,borderColor:'#12172a',tension:0.2,fill:false}]},
         options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:false}}}});
     }else if(window.progressChart){
-      window.progressChart.data.labels = labels;
-      window.progressChart.data.datasets[0].data = data;
-      window.progressChart.update();
+      window.progressChart.data.labels = labels; window.progressChart.data.datasets[0].data = data; window.progressChart.update();
     }
   }
   const addLogBtn = document.getElementById('addLog');
@@ -663,25 +672,20 @@
       logs = logs.filter(e=>e.date!==d);
       logs.push({date:d, weight:w});
       logs.sort((a,b)=>a.date.localeCompare(b.date));
-      setLogs(logs);
-      renderLogs();
+      setLogs(logs); renderLogs();
     });
   }
 
-  /* ---------- Export & Email ---------- */
+  /* Export (mailto) */
   window.exportDataEmail = function(toAddress=''){
     const lines=[];
-    lines.push('Elevate Tracker Export');
-    lines.push(new Date().toLocaleString());
-    lines.push('');
-
+    lines.push('Elevate Tracker Export'); lines.push(new Date().toLocaleString()); lines.push('');
     const fname = document.getElementById('profile_fullname')?.value || '';
     if(fname){ lines.push('Client: ' + fname); }
     const phone = document.getElementById('profile_phone')?.value || '';
     const email = document.getElementById('profile_email')?.value || '';
     if(phone||email) lines.push('Contact: ' + [phone,email].filter(Boolean).join(' | '));
     lines.push('');
-
     const BMR = document.getElementById('bmr_out')?.textContent || '0';
     const TDEE = document.getElementById('bmr_tdee')?.textContent || '0';
     const TDEER = document.getElementById('bmr_tdee_ref')?.textContent || '0';
@@ -693,18 +697,13 @@
     lines.push('NEAT: ' + NEAT + ' kcal/day');
     lines.push('TDEE (Refined): ' + TDEER + ' kcal');
     if(BASIS) lines.push('Target Basis: ' + BASIS);
-    lines.push('Target Calories: ' + TARGET + ' kcal');
-    lines.push('');
-
+    lines.push('Target Calories: ' + TARGET + ' kcal'); lines.push('');
     const BMI = document.getElementById('bmi_out')?.textContent || '';
     const BMIC = document.getElementById('bmi_cat')?.textContent || '';
-    if(BMI) lines.push('BMI: ' + BMI + (BMIC?(' ('+BMIC+')'):''));
-    if(BMI) lines.push('');
-
+    if(BMI) { lines.push('BMI: ' + BMI + (BMIC?(' ('+BMIC+')'):'')); lines.push(''); }
     const L = document.getElementById('bc_lean')?.textContent || '';
     const F = document.getElementById('bc_fat')?.textContent || '';
     if(L || F){ if(L) lines.push('Lean Mass: ' + L + ' kg'); if(F) lines.push('Fat Mass: ' + F + ' kg'); lines.push(''); }
-
     const pPct = document.getElementById('pPct')?.value || '';
     const fPct = document.getElementById('fPct')?.value || '';
     const cPct = document.getElementById('cPct')?.value || '';
@@ -716,23 +715,19 @@
     if(cPct) lines.push(`• Carbs: ${cPct}%` + (cGr?` (${cGr} g)`:``));
     if(fPct) lines.push(`• Fat: ${fPct}%`   + (fGr?` (${fGr} g)`:``));
     lines.push('');
-
     lines.push('Weight Log:');
     const logs = (function(){ try{return JSON.parse(localStorage.getItem('weightLog')||'[]')}catch(e){return[]} })();
     if(logs.length){ logs.forEach(e=>lines.push(`${e.date} — ${e.weight} kg`)); } else { lines.push('(no entries)'); }
-
     const subject='Elevate Tracker Export';
     const body=lines.join('\n');
     const mailto='mailto:'+encodeURIComponent(toAddress)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
     window.location.href=mailto;
   };
 
-  /* ---------- Embedded brand icon (“E”) + manifest/icons ---------- */
+  /* Embedded brand icon (“E”) + manifest/icons */
   function createBrandIcon(size=512){
     const c=document.createElement('canvas'); c.width=c.height=size;
     const ctx=c.getContext('2d');
-
-    // Rounded navy card
     const bg = '#12172a';
     const r=size*0.18, w=size, h=size;
     ctx.fillStyle=bg;
@@ -742,35 +737,20 @@
     ctx.lineTo(r,h); ctx.quadraticCurveTo(0,h,0,h-r);
     ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
     ctx.closePath(); ctx.fill();
-
-    // Gold gradient
     const grad=ctx.createLinearGradient(0,0,0,h);
-    grad.addColorStop(0,'#ffdf8a');   // highlight
-    grad.addColorStop(1,'#f3c14b');   // base gold
+    grad.addColorStop(0,'#ffdf8a');
+    grad.addColorStop(1,'#f3c14b');
     ctx.fillStyle=grad;
-
-    // Stylised "E": vertical bar + 3 horizontal bars
     const pad = size*0.22;
     const barW = size*0.12;
-    const barX = pad;
-    const barY = pad; 
-    const barH = h - pad*2;
-
-    // vertical bar
+    const barX = pad, barY = pad, barH = h - pad*2;
     ctx.fillRect(barX, barY, barW, barH);
-
-    // horizontal bars
     const hW = w - pad*2;
     const thick = size*0.12;
     const gap = (barH - thick*3)/2;
-
-    // top
     ctx.fillRect(barX, barY, hW, thick);
-    // middle (shorter)
     ctx.fillRect(barX, barY + thick + gap, hW*0.75, thick);
-    // bottom
     ctx.fillRect(barX, barY + (thick+gap)*2, hW, thick);
-
     return c.toDataURL('image/png');
   }
 
@@ -778,19 +758,11 @@
     const icon512=createBrandIcon(512);
     const icon192=createBrandIcon(192);
     const icon180=createBrandIcon(180);
-
-    // Icons for iOS + browser
-    document.getElementById('dyn-apple-icon').setAttribute('href', icon180);
-    document.getElementById('dyn-favicon').setAttribute('href', icon192);
-
-    // Manifest
+    document.getElementById('dyn-apple-icon')?.setAttribute('href', icon180);
+    document.getElementById('dyn-favicon')?.setAttribute('href', icon192);
     const manifest = {
-      name: "Elevate Tracker",
-      short_name: "Elevate",
-      start_url: "./",
-      display: "standalone",
-      background_color: "#0b0b0f",
-      theme_color: "#0b0b0f",
+      name: "Elevate Tracker", short_name: "Elevate", start_url: "./", display: "standalone",
+      background_color: "#0b0b0f", theme_color: "#0b0b0f",
       icons: [
         {src: icon192, sizes: "192x192", type: "image/png"},
         {src: icon512, sizes: "512x512", type: "image/png", purpose: "maskable any"}
@@ -798,36 +770,22 @@
     };
     const manBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
     const manURL = URL.createObjectURL(manBlob);
-    document.getElementById('dyn-manifest').setAttribute('href', manURL);
-
-    // Optional SW stub
+    document.getElementById('dyn-manifest')?.setAttribute('href', manURL);
     if ('serviceWorker' in navigator) {
-      const swCode = `
-        self.addEventListener('install',e=>self.skipWaiting());
-        self.addEventListener('activate',e=>self.clients.claim());
-        self.addEventListener('fetch',()=>{});
-      `;
+      const swCode = `self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>self.clients.claim());self.addEventListener('fetch',()=>{});`;
       const swBlob = new Blob([swCode], {type:'text/javascript'});
       const swURL = URL.createObjectURL(swBlob);
       navigator.serviceWorker.register(swURL).catch(()=>{});
     }
   }
 
-  /* ---------- Listeners & boot ---------- */
   document.addEventListener('input', (e)=>{
     if(!e.target.matches('input,select,textarea')) return;
-    syncField(e.target.id);
-    recalc();
-    save();
+    syncField(e.target.id); recalc(); save();
   });
-  document.addEventListener('change', (e)=>{
-    if(e.target && e.target.id==='neat_use'){ recalc(); save(); }
-  });
+  document.addEventListener('change', (e)=>{ if(e.target && e.target.id==='neat_use'){ recalc(); save(); } });
 
-  load();
-  recalc();
-  renderLogs();
-  injectPWA();
+  load(); recalc(); renderLogs(); injectPWA();
 })();
 </script>
 </body>
