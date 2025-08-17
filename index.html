@@ -29,14 +29,14 @@
     --ink:#1b1e28;
     --bg:#f5f6fa;
     --card:#ffffff;
-    --line:#e7e8ee;
+    --line:#e7e9f3;
     --grid:#e9e9ef;
   }
   *{box-sizing:border-box}
   body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
 
   /* Auth gate styling */
-  .gate{max-width:420px;margin:40px auto;padding:20px;border:1px solid #e6e8f2;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+  .gate{max-width:420px;margin:40px auto 16px auto;padding:20px;border:1px solid #e6e8f2;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06)}
   .gate h2{margin:0 0 12px 0;text-align:center;color:#12172a}
   .gate .row{display:grid;gap:10px}
   .gate input{padding:12px;border:1px solid #d6dae6;border-radius:10px}
@@ -45,7 +45,7 @@
   .btn.alt{background:#12172a;color:#ffd880}
   .msg{color:#b00020;font-size:12px;min-height:18px}
 
-  /* Tracker shell */
+  /* Shell */
   .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.10);overflow:hidden}
   .head{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:#fff;padding:22px 16px;border-bottom:4px solid #060a18;text-align:center;position:relative}
   .head h1{margin:0;font-weight:900;letter-spacing:.3px}
@@ -72,7 +72,7 @@
   .section{background:linear-gradient(135deg,var(--navy),#1a213a);color:transparent;-webkit-background-clip:text;background-clip:text;padding:10px;text-align:center;margin:12px 0;font-weight:900;font-size:20px}
   .section:after{content:"";display:block;height:3px;margin:10px auto 0;width:120px;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
 
-  /* Grids and tables */
+  /* Grids/tables */
   .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #ccd0dd;margin-bottom:16px;border-radius:10px;overflow:hidden}
   .cell{background:#fff;border:1px solid #e5e7f1;padding:10px;min-height:40px;display:flex;align-items:center;font-size:14px}
   .label{background:#f1f5ff;border-right:2px solid #c7cee3;font-weight:800;color:#1e2540}
@@ -83,7 +83,6 @@
   th{background:linear-gradient(135deg,var(--navy),#1a213a);color:#ffd880;padding:10px}
   td{border:1px solid #e6e8f2;padding:8px;text-align:center}
 
-  /* Cards / layout */
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
   .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:12px 0}
   .calc-card{border:2px solid transparent;border-radius:12px;text-align:center;padding:14px;font-weight:900;background:#fff;position:relative}
@@ -379,10 +378,6 @@
     apiKey: "PASTE_API_KEY_HERE",
     authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
     projectId: "YOUR_PROJECT_ID",
-    // Optional but fine to include:
-    // storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    // messagingSenderId: "XXXX",
-    // appId: "1:XXXX:web:XXXX"
   };
 
   /* 2) Init + helpers */
@@ -419,7 +414,7 @@
     const pass = $('#auth-pass').value;
     try {
       await createUserWithEmailAndPassword(auth, email, pass);
-      // If you want manual approval, uncomment the next two lines:
+      // Optional: force manual approval
       // await signOut(auth);
       // msg.textContent = "Account created. Awaiting approval.";
     } catch(e){ msg.textContent = e.code || 'Registration failed'; }
@@ -428,7 +423,7 @@
   $('#auth-logout').addEventListener('click', async ()=>{ await signOut(auth); });
 </script>
 
-<!-- ===================== TRACKER LOGIC (UNCHANGED, RUNS EITHER WAY) ===================== -->
+<!-- ===================== TRACKER LOGIC ===================== -->
 <script>
 (()=>{
   const $ = id => document.getElementById(id);
@@ -468,7 +463,7 @@
     Object.keys(data).forEach(k=>{ const el=$(k); if(el) el.value=data[k]; });
   }
 
-  /* Sync fields across tabs/profile */
+  /* Sync across tabs/profile */
   const syncGroups={
     age:['bmr_age','profile_age'],
     gender:['bmr_gender','profile_gender'],
