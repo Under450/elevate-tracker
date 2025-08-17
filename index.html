@@ -3,19 +3,46 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Elevate Tracker — Full + NEAT</title>
-<link rel="icon" href="data:,">
+<title>Elevate Tracker — PWA (Embedded Icon)</title>
+
+<!-- iOS full-screen + title -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Elevate Tracker">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- Theme color -->
+<meta name="theme-color" content="#0a1a2b">
+
+<!-- We’ll inject the manifest + icons at runtime (all embedded / no files) -->
+<link id="dyn-manifest" rel="manifest">
+<link id="dyn-apple-icon" rel="apple-touch-icon">
+<link id="dyn-favicon" rel="icon" type="image/png">
+
+<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
 <style>
   :root{
-    --green:#004d40; --gold:#fbc02d; --ink:#222; --muted:#666;
+    /* Elevate navy + metallic gold gradient */
+    --navy:#0a1a2b;
+    --navy-2:#06202f;
+    --gold:#f3c14b;
+    --gold-2:#ffdf8a;
+    --green:#004d40; /* for some charts and accents already used in tracker */
+    --ink:#222; --muted:#666;
     --bg:#f6f6f6; --grid:#e0e0e0; --card:#ffffff; --line:#e6e6e6;
   }
   *{box-sizing:border-box}
   body{font-family:Inter,Arial,sans-serif;background:var(--bg);margin:0;color:var(--ink)}
-  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.08);overflow:hidden}
-  .head{background:linear-gradient(180deg,var(--green),#063c33);color:var(--gold);padding:20px 16px;border-bottom:4px solid #002b25;text-align:center}
-  .head h1{margin:0;font-weight:800}
+
+  .wrap{max-width:1200px;margin:18px auto;background:#fff;border-radius:12px;
+        box-shadow:0 10px 28px rgba(0,0,0,.08);overflow:hidden}
+  .head{
+    background:linear-gradient(180deg,var(--navy),var(--navy-2));
+    color:var(--gold);
+    padding:20px 16px;border-bottom:4px solid #03121f;text-align:center
+  }
+  .head h1{margin:0;font-weight:800;letter-spacing:.2px}
   .head .sub{color:#fff;opacity:.9;margin-top:6px}
 
   .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:#eef1ee;border-bottom:2px solid #ddd}
@@ -23,28 +50,37 @@
        font-weight:800;cursor:pointer;user-select:none;transition:transform .08s ease, box-shadow .2s ease, background .15s ease, border-color .15s ease}
   .tab:hover{background:#fafafa}
   .tab:active{transform:translateY(1px)}
-  .tab.active{background:var(--gold);color:#0a0a0a;border-color:var(--gold);box-shadow:0 10px 20px rgba(251,192,45,.25)}
+  .tab.active{
+    background:linear-gradient(180deg,var(--gold-2),var(--gold));
+    color:#0a0a0a;border-color:var(--gold);box-shadow:0 10px 20px rgba(251,192,45,.25)
+  }
 
   .sheet{display:none;padding:16px;opacity:0;transform:translateY(4px);transition:opacity .18s ease, transform .18s ease}
   .sheet.active{display:block;opacity:1;transform:none}
-  .section{background:var(--green);color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
+  .section{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--gold);padding:10px;border-radius:8px;text-align:center;margin:12px 0;font-weight:800}
 
   .grid{display:grid;grid-template-columns:180px 1fr 180px 1fr;gap:2px;background:var(--grid);border:2px solid #bdbdbd;margin-bottom:16px}
   .cell{background:#fff;border:1px solid #ddd;padding:10px;min-height:38px;display:flex;align-items:center;font-size:14px}
-  .label{background:#c8e6c9;border-right:2px solid var(--green);font-weight:700}
+  .label{
+    background:linear-gradient(180deg,#e9f5eb,#d2ead6);
+    border-right:2px solid var(--navy);font-weight:700
+  }
   .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
   input,select,textarea{width:100%;border:none;background:transparent;font-size:14px;outline:none}
   textarea{min-height:60px;resize:vertical}
 
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
   .cards{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin:12px 0}
-  .calc-card{border:2px solid var(--gold);border-radius:8px;text-align:center;padding:14px;font-weight:800}
-  .calc-card .value{display:block;color:var(--green);font-size:28px;margin-top:6px}
+  .calc-card{
+    border:2px solid var(--gold);border-radius:12px;text-align:center;padding:14px;font-weight:800;
+    background:linear-gradient(180deg,#fff, #fffdf4)
+  }
+  .calc-card .value{display:block;color:var(--navy);font-size:28px;margin-top:6px}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .tight{max-width:940px;margin:0 auto}
 
   table{width:100%;border-collapse:collapse}
-  th{background:var(--green);color:var(--gold);padding:10px}
+  th{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--gold);padding:10px}
   td{border:1px solid #e6e6e6;padding:8px;text-align:center}
 
   .macro-row{display:grid;grid-template-columns:140px 1fr 140px 1fr 140px 1fr;gap:10px;margin:10px 0}
@@ -57,10 +93,9 @@
 
   .weightlog{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin:10px 0}
   .weightlog input{border:1px solid #d6d6d6;border-radius:6px;padding:8px;background:#fff}
-  .btn{padding:9px 14px;border:1px solid var(--green);background:#fff;border-radius:8px;font-weight:700;cursor:pointer}
-  .btn:hover{background:#f3fff9}
+  .btn{padding:9px 14px;border:1px solid var(--navy);background:#fff;border-radius:8px;font-weight:700;cursor:pointer}
+  .btn:hover{background:#f8fbff}
 
-  .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:4px}
   .foot{padding:10px;text-align:center;color:#666;border-top:1px solid #eee;font-size:12px;background:#fafafa}
 
   @media(max-width:1100px){
@@ -92,9 +127,9 @@
     <div class="tab" data-sheet="profile" role="tab" aria-selected="false" tabindex="-1">Client Profile</div>
   </div>
 
-  <!-- BMR -->
+  <!-- BMR (+ NEAT) -->
   <section id="bmr" class="sheet active tight" role="tabpanel" aria-label="BMR">
-    <div class="section">Basal Metabolic Rate (Mifflin–St Jeor) & Daily Targets</div>
+    <div class="section">Basal Metabolic Rate (Mifflin–St Jeor) • NEAT • Daily Targets</div>
     <div class="grid">
       <div class="cell label">Age (years)</div><div class="cell"><input id="bmr_age" type="number" min="10" step="1" placeholder="30"></div>
       <div class="cell label">Gender</div><div class="cell">
@@ -102,6 +137,7 @@
       </div>
       <div class="cell label">Height (cm)</div><div class="cell"><input id="bmr_height" type="number" step="0.1" placeholder="175"></div>
       <div class="cell label">Weight (kg)</div><div class="cell"><input id="bmr_weight" type="number" step="0.1" placeholder="75.0"></div>
+
       <div class="cell label">Activity Level</div>
       <div class="cell">
         <select id="bmr_activity">
@@ -129,13 +165,12 @@
       <div class="cell label">TDEE (BMR × Activity)</div><div class="cell result" id="bmr_tdee">0</div>
       <div class="cell label">Target Calories</div><div class="cell result" id="bmr_target">0</div>
 
-      <!-- NEW NEAT section -->
+      <!-- NEAT -->
       <div class="cell label">Daily Steps (NEAT)</div><div class="cell"><input id="neat_steps" type="number" min="0" step="100" placeholder="e.g., 8000"></div>
       <div class="cell label">kcal per step</div><div class="cell"><input id="neat_kps" type="number" min="0" step="0.001" value="0.045"></div>
-
       <div class="cell label">NEAT kcal/day</div><div class="cell result" id="neat_out">0</div>
       <div class="cell label">Use NEAT to refine TDEE</div>
-      <div class="cell"><label style="display:flex;align-items:center;gap:8px;"><input id="neat_use" type="checkbox"> <span>Refine TDEE = max(BMR×Activity, BMR+NEAT)</span></label></div>
+      <div class="cell"><label style="display:flex;align-items:center;gap:8px;"><input id="neat_use" type="checkbox"> <span>Refined TDEE = max(BMR×Activity, BMR+NEAT)</span></label></div>
 
       <div class="cell label">TDEE (Refined)</div><div class="cell result" id="bmr_tdee_ref">0</div>
       <div class="cell label">Target (Refined Basis)</div><div class="cell result" id="bmr_target_basis">Baseline</div>
@@ -145,8 +180,7 @@
       <div class="calc-card">🔥 BMR <span class="value" id="mc_bmr">0</span>cal/day</div>
       <div class="calc-card">🔥 TDEE <span class="value" id="mc_tdee">0</span>cal/day</div>
       <div class="calc-card">🔥 Target Calories <span class="value" id="mc_target">0</span>cal/day</div>
-      <!-- New cards -->
-      <div class="calc-card">🔥 NEAT <span class="value" id="mc_neat">0</span>cal/day<br><small>(steps-based)</small></div>
+      <div class="calc-card">🔥 NEAT <span class="value" id="mc_neat">0</span>cal/day</div>
       <div class="calc-card">🔥 TDEE (Refined) <span class="value" id="mc_tdee_ref">0</span>cal/day</div>
     </div>
   </section>
@@ -292,6 +326,7 @@
         <div class="cell label">Email</div><div class="cell"><input id="profile_email" type="email" placeholder="name@example.com"></div>
         <div class="cell label">Emergency Contact</div><div class="cell"><input id="profile_emergency" type="text" placeholder="Name & phone"></div>
       </div>
+
       <div class="grid">
         <div class="cell label">Medical History & Conditions</div><div class="cell"><textarea id="profile_medical" placeholder="e.g., asthma, hypertension, surgeries"></textarea></div>
         <div class="cell label">Medications & Supplements</div><div class="cell"><textarea id="profile_meds" placeholder="List all current meds/supps"></textarea></div>
@@ -304,6 +339,7 @@
         <div class="cell label">Sleep Hours (avg)</div><div class="cell"><input id="profile_sleep_hours" type="number" min="0" step="0.5" placeholder="e.g., 7.5"></div>
       </div>
     </div>
+
     <div class="card" style="margin-top:12px">
       <h3>Initial Assessment</h3>
       <div class="grid">
@@ -318,8 +354,8 @@
     </div>
   </section>
 
-  <div class="export-buttons" style="text-align:center;padding:16px">
-    <button class="btn" style="border-color:#217346" onclick="exportDataEmail('')">📧 Export & Email</button>
+  <div style="text-align:center;padding:16px">
+    <button class="btn" onclick="exportDataEmail('')">📧 Export & Email</button>
   </div>
 
   <div class="foot">Elevate Tracker • ©</div>
@@ -329,9 +365,9 @@
 (()=>{
   const $ = id => document.getElementById(id);
   const N = v => (v===''||v==null)?0:(isFinite(+v)?+v:0);
-  const LS = 'elevate_tracker_full_v3';
+  const LS = 'elevate_tracker_full_pwa_v1';
 
-  // Tabs
+  /* ---------- Tabs ---------- */
   const tabbar = document.getElementById('tabbar');
   const tabs = [...tabbar.querySelectorAll('.tab')];
   function show(id){
@@ -351,7 +387,7 @@
   const initial=(location.hash||'#bmr').slice(1);
   show(document.getElementById(initial)?initial:'bmr');
 
-  // Persistence
+  /* ---------- Persistence ---------- */
   function save(){
     const data={};
     document.querySelectorAll('input,select,textarea').forEach(el=>{ if(el.id) data[el.id]=el.value; });
@@ -362,7 +398,7 @@
     Object.keys(data).forEach(k=>{ const el=$(k); if(el) el.value=data[k]; });
   }
 
-  // Sync groups across tabs/profile
+  /* ---------- Sync groups across tabs/profile ---------- */
   const syncGroups={
     age:['bmr_age','profile_age'],
     gender:['bmr_gender','profile_gender'],
@@ -379,7 +415,7 @@
     }
   }
 
-  // Charts
+  /* ---------- Charts ---------- */
   let macroChart=null, mealChart=null, progressChart=null;
   const pieLabelsPlugin = {
     id: 'pieLabels',
@@ -419,7 +455,7 @@
     };
   }
 
-  // BMR function
+  /* ---------- BMR math ---------- */
   function bmrCalc(age, gender, h, w){
     if(!(age&&h&&w)) return 0;
     return gender==='male'
@@ -434,21 +470,20 @@
     const h=N(($('bmr_height')||{}).value), w=N(($('bmr_weight')||{}).value);
     const act=N(($('bmr_activity')||{}).value)||1.55, adj=N(($('bmr_adjust')||{}).value)||0;
 
-    // Core calcs
+    // Core calc
     const bmr = Math.round(bmrCalc(age,gender,h,w) || 0);
     const tdee_base = Math.round((bmr||0) * act);
 
     // NEAT
     const steps = N(($('neat_steps')||{}).value);
-    const kps = N(($('neat_kps')||{}).value || 0.045); // kcal per step
+    const kps = N(($('neat_kps')||{}).value || 0.045);
     const neat = Math.round(steps * kps);
     const useNeat = !!(($('neat_use')||{}).checked);
     const tdee_ref = useNeat ? Math.max(tdee_base, bmr + neat) : tdee_base;
 
-    // Target calories use refined TDEE when requested
     const target = Math.max(0, tdee_ref + adj);
 
-    // Output
+    // Outputs
     const setTxt=(id,val)=>{ const el=$(id); if(el) el.textContent=val; };
     setTxt('bmr_out', bmr);
     setTxt('bmr_tdee', tdee_base);
@@ -461,10 +496,9 @@
     setTxt('mc_tdee_ref', tdee_ref);
     setTxt('mc_target', target);
     setTxt('mc_neat', neat);
-
     localStorage.setItem('targetCals', target);
 
-    // BMI (fallback to BMR inputs if empty)
+    // BMI
     const bh=N(($('bmi_height')||{}).value || h), bw=N(($('bmi_weight')||{}).value || w);
     const bmi = bh ? (bw/Math.pow(bh/100,2)) : 0;
     setTxt('bmi_out', bmi ? bmi.toFixed(1) : '0');
@@ -476,7 +510,7 @@
     setTxt('bc_lean', lean ? lean.toFixed(1) : '0');
     setTxt('bc_fat', (bcw-(lean||0)) ? (bcw-(lean||0)).toFixed(1) : '0');
 
-    // Macros (Protein + Fat editable, Carbs = 100 - (P+F))
+    // Macros (P+F editable, C = 100-(P+F))
     let pPct=N(($('pPct')||{}).value)||0, fPct=N(($('fPct')||{}).value)||0;
     if(pPct<0) pPct=0; if(fPct<0) fPct=0;
     let cPct = 100 - (pPct + fPct);
@@ -484,13 +518,12 @@
     if($('cPct')) $('cPct').value = Math.round(cPct);
     if($('pPct')) $('pPct').value = Math.round(pPct);
 
-    // calories + grams from target
     const pcals=target*(pPct/100), ccals=target*(cPct/100), fcals=target*(fPct/100);
     const pG=pcals/4, cG=ccals/4, fG=fcals/9;
     setTxt('pCals', Math.round(pcals)); setTxt('cCals', Math.round(ccals)); setTxt('fCals', Math.round(fcals));
     setTxt('pGr', Math.round(pG)); setTxt('cGr', Math.round(cG)); setTxt('fGr', Math.round(fG));
 
-    // Macro pie chart
+    // Macro pie
     const mctx = document.getElementById('macroChart')?.getContext('2d');
     if(mctx){
       if(!macroChart){
@@ -509,14 +542,14 @@
       }
     }
 
-    // Meal splits (25/30/30/15 of target calories)
+    // Meal splits (25/30/30/15)
     const S={b:.25,l:.30,d:.30,s:.15}, R=x=>Math.round(x);
     setTxt('m1P', R(pG*S.b)); setTxt('m2P', R(pG*S.l)); setTxt('m3P', R(pG*S.d)); setTxt('sP', R(pG*S.s));
     setTxt('m1C', R(cG*S.b)); setTxt('m2C', R(cG*S.l)); setTxt('m3C', R(cG*S.d)); setTxt('sC', R(cG*S.s));
     setTxt('m1F', R(fG*S.b)); setTxt('m2F', R(fG*S.l)); setTxt('m3F', R(fG*S.d)); setTxt('sF', R(fG*S.s));
     setTxt('m1K', R(target*S.b)); setTxt('m2K', R(target*S.l)); setTxt('m3K', R(target*S.d)); setTxt('sK', R(target*S.s));
 
-    // Meal stacked bars by kcal
+    // Meal stacked bars
     const labels=['Breakfast','Lunch','Dinner','Snacks'];
     const pBars=[pG*S.b*4,pG*S.l*4,pG*S.d*4,pG*S.s*4];
     const cBars=[cG*S.b*4,cG*S.l*4,cG*S.d*4,cG*S.s*4];
@@ -539,7 +572,7 @@
       }
     }
 
-    // Measurements change
+    // Measurement change
     function setChange(prefix,unit){
       const s=N(($(`${prefix}1`)||{}).value);
       const l=N(($(`${prefix}12`)||{}).value)||N(($(`${prefix}8`)||{}).value)||N(($(`${prefix}4`)||{}).value);
@@ -556,28 +589,26 @@
     const dw=$('diffW'); if(dw) dw.textContent=(tarW&&curW)?(tarW-curW).toFixed(1):'0';
     const dbf=$('diffBF'); if(dbf) dbf.textContent=(tarBF&&curBF)?(tarBF-curBF).toFixed(1):'0';
 
-    // Refresh weight log chart
     renderLogs();
   }
 
-  // Weight log + chart
-  let weightLogs = [];
+  /* ---------- Weight log + chart ---------- */
   const logTable = document.getElementById('logTable');
   const pctx=document.getElementById('progressChart')?.getContext('2d');
   function getLogs(){ try{ return JSON.parse(localStorage.getItem('weightLog')||'[]'); }catch(e){ return []; } }
   function setLogs(logs){ localStorage.setItem('weightLog', JSON.stringify(logs)); }
   function renderLogs(){
-    weightLogs = getLogs();
+    const logs = getLogs();
     if(logTable){
       logTable.innerHTML='<tr><th>Date</th><th>Weight (kg)</th></tr>';
-      weightLogs.forEach(e=>{
+      logs.forEach(e=>{
         const tr=document.createElement('tr');
         tr.innerHTML = `<td>${e.date}</td><td>${e.weight}</td>`;
         logTable.appendChild(tr);
       });
     }
-    const labels = weightLogs.map(e=>e.date);
-    const data = weightLogs.map(e=>+e.weight);
+    const labels = logs.map(e=>e.date);
+    const data = logs.map(e=>+e.weight);
     if(!window.progressChart && pctx){
       window.progressChart = new Chart(pctx,{type:'line',
         data:{labels,datasets:[{label:'Weight (kg)',data,borderColor:'#004d40',tension:0.2,fill:false}]},
@@ -603,14 +634,13 @@
     });
   }
 
-  // Export & Email
+  /* ---------- Export & Email ---------- */
   window.exportDataEmail = function(toAddress=''){
     const lines=[];
     lines.push('Elevate Tracker Export');
     lines.push(new Date().toLocaleString());
     lines.push('');
 
-    // Profile summary (optional)
     const fname = document.getElementById('profile_fullname')?.value || '';
     if(fname){ lines.push('Client: ' + fname); }
     const phone = document.getElementById('profile_phone')?.value || '';
@@ -618,7 +648,6 @@
     if(phone||email) lines.push('Contact: ' + [phone,email].filter(Boolean).join(' | '));
     lines.push('');
 
-    // BMR/TDEE/Target + NEAT
     const BMR = document.getElementById('bmr_out')?.textContent || '0';
     const TDEE = document.getElementById('bmr_tdee')?.textContent || '0';
     const TDEER = document.getElementById('bmr_tdee_ref')?.textContent || '0';
@@ -633,18 +662,15 @@
     lines.push('Target Calories: ' + TARGET + ' kcal');
     lines.push('');
 
-    // BMI
     const BMI = document.getElementById('bmi_out')?.textContent || '';
     const BMIC = document.getElementById('bmi_cat')?.textContent || '';
     if(BMI) lines.push('BMI: ' + BMI + (BMIC?(' ('+BMIC+')'):''));
     if(BMI) lines.push('');
 
-    // Body Comp
     const L = document.getElementById('bc_lean')?.textContent || '';
     const F = document.getElementById('bc_fat')?.textContent || '';
     if(L || F){ if(L) lines.push('Lean Mass: ' + L + ' kg'); if(F) lines.push('Fat Mass: ' + F + ' kg'); lines.push(''); }
 
-    // Macros
     const pPct = document.getElementById('pPct')?.value || '';
     const fPct = document.getElementById('fPct')?.value || '';
     const cPct = document.getElementById('cPct')?.value || '';
@@ -657,7 +683,6 @@
     if(fPct) lines.push(`• Fat: ${fPct}%`   + (fGr?` (${fGr} g)`:``));
     lines.push('');
 
-    // Weight Log
     lines.push('Weight Log:');
     const logs = (function(){ try{return JSON.parse(localStorage.getItem('weightLog')||'[]')}catch(e){return[]} })();
     if(logs.length){ logs.forEach(e=>lines.push(`${e.date} — ${e.weight} kg`)); } else { lines.push('(no entries)'); }
@@ -668,7 +693,94 @@
     window.location.href=mailto;
   };
 
-  // Listeners
+  /* ---------- Icon + Manifest + SW (all embedded) ---------- */
+  function createIcon(size=512){
+    const c=document.createElement('canvas'); c.width=c.height=size;
+    const ctx=c.getContext('2d');
+
+    // Rounded navy background
+    const r=size*0.18, w=size, h=size;
+    ctx.fillStyle='#0a1a2b';
+    ctx.beginPath();
+    ctx.moveTo(r,0); ctx.lineTo(w-r,0); ctx.quadraticCurveTo(w,0,w,r);
+    ctx.lineTo(w,h-r); ctx.quadraticCurveTo(w,h,w-r,h);
+    ctx.lineTo(r,h); ctx.quadraticCurveTo(0,h,0,h-r);
+    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath(); ctx.fill();
+
+    // Gold gradient symbol (abstract upward arrow/triangle)
+    const grad=ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0,'#ffdf8a');   // light gold
+    grad.addColorStop(1,'#f3c14b');   // deep gold
+    ctx.fillStyle=grad;
+
+    // Triangle
+    const pad=size*0.22;
+    ctx.beginPath();
+    ctx.moveTo(size/2, pad);
+    ctx.lineTo(w-pad, h-pad);
+    ctx.lineTo(pad, h-pad);
+    ctx.closePath();
+    ctx.fill();
+
+    // Inner cut (navy) to create "stylish" chevron
+    ctx.fillStyle='#0a1a2b';
+    const inset=size*0.08;
+    ctx.beginPath();
+    ctx.moveTo(size/2, pad+inset);
+    ctx.lineTo(w-(pad+inset), h-(pad+inset));
+    ctx.lineTo(pad+inset, h-(pad+inset));
+    ctx.closePath();
+    ctx.fill();
+
+    // Gold vertical bar (implies "E"/elevate)
+    ctx.fillStyle=grad;
+    const bw=size*0.10;
+    ctx.fillRect(size/2 - bw/2, h*0.36, bw, h*0.48);
+
+    return c.toDataURL('image/png');
+  }
+
+  function injectPWA(){
+    const icon512=createIcon(512);
+    const icon192=createIcon(192);
+    const icon180=createIcon(180);
+
+    // Icons for browser + iOS
+    const apple = document.getElementById('dyn-apple-icon'); apple.setAttribute('href', icon180);
+    const fav = document.getElementById('dyn-favicon'); fav.setAttribute('href', icon192);
+
+    // Manifest (as blob)
+    const manifest = {
+      name: "Elevate Tracker",
+      short_name: "Elevate",
+      start_url: "./",
+      display: "standalone",
+      background_color: "#0a1a2b",
+      theme_color: "#0a1a2b",
+      icons: [
+        {src: icon192, sizes: "192x192", type: "image/png"},
+        {src: icon512, sizes: "512x512", type: "image/png"}
+      ]
+    };
+    const manBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+    const manURL = URL.createObjectURL(manBlob);
+    document.getElementById('dyn-manifest').setAttribute('href', manURL);
+
+    // Minimal service worker (embedded) for standalone feel
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('install',e=>self.skipWaiting());
+        self.addEventListener('activate',e=>self.clients.claim());
+        self.addEventListener('fetch',()=>{});
+      `;
+      const swBlob = new Blob([swCode], {type:'text/javascript'});
+      const swURL = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swURL).catch(()=>{});
+    }
+  }
+
+  /* ---------- Listeners + boot ---------- */
   document.addEventListener('input', (e)=>{
     if(!e.target.matches('input,select,textarea')) return;
     syncField(e.target.id);
@@ -676,13 +788,13 @@
     save();
   });
   document.addEventListener('change', (e)=>{
-    if(e.target && (e.target.id==='neat_use')){ recalc(); save(); }
+    if(e.target && e.target.id==='neat_use'){ recalc(); save(); }
   });
 
-  // Boot
   load();
   recalc();
   renderLogs();
+  injectPWA();
 })();
 </script>
 </body>
