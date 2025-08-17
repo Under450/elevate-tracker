@@ -36,7 +36,8 @@
   .cell{background:#fff;border:1px solid #ddd;padding:10px;min-height:38px;display:flex;align-items:center;font-size:14px}
   .label{background:#c8e6c9;border-right:2px solid var(--green);font-weight:700}
   .result{background:#fff7da;font-weight:800;color:#6b5200;justify-content:center}
-  input,select{width:100%;border:none;background:transparent;font-size:14px;outline:none}
+  input,select,textarea{width:100%;border:none;background:transparent;font-size:14px;outline:none}
+  textarea{min-height:60px;resize:vertical}
 
   /* Cards / layout helpers */
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
@@ -78,7 +79,7 @@
 <div class="wrap" role="application" aria-label="Elevate Tracker">
   <div class="head">
     <h1>Elevate Tracker</h1>
-    <div class="sub">BMR • BMI • Body Composition • Macros • Measurements • Progress</div>
+    <div class="sub">BMR • BMI • Body Composition • Macros • Measurements • Progress • Client Profile</div>
   </div>
 
   <!-- Tabs -->
@@ -89,6 +90,7 @@
     <div class="tab" data-sheet="macros" role="tab" aria-selected="false" tabindex="-1">Macros</div>
     <div class="tab" data-sheet="meas" role="tab" aria-selected="false" tabindex="-1">Measurements</div>
     <div class="tab" data-sheet="prog" role="tab" aria-selected="false" tabindex="-1">Progress</div>
+    <div class="tab" data-sheet="profile" role="tab" aria-selected="false" tabindex="-1">Client Profile</div>
   </div>
 
   <!-- BMR -->
@@ -256,6 +258,93 @@
     <div class="card" style="margin-top:12px"><canvas id="progressChart"></canvas></div>
   </section>
 
+  <!-- NEW: Client Profile -->
+  <section id="profile" class="sheet tight" role="tabpanel" aria-label="Client Profile">
+    <div class="section">CLIENT PROFILE & ASSESSMENT</div>
+
+    <div class="card">
+      <h3>Personal Information</h3>
+      <div class="grid">
+        <div class="cell label">Full Name</div><div class="cell"><input id="profile_fullname" type="text" placeholder="First & Last name"></div>
+        <div class="cell label">Age</div><div class="cell"><input id="profile_age" type="number" min="10" step="1" placeholder="Years"></div>
+        <div class="cell label">Gender</div>
+        <div class="cell">
+          <select id="profile_gender">
+            <option value="">Select…</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other / Prefer not to say</option>
+          </select>
+        </div>
+        <div class="cell label">Phone</div><div class="cell"><input id="profile_phone" type="tel" placeholder="+44…"></div>
+        <div class="cell label">Email</div><div class="cell"><input id="profile_email" type="email" placeholder="name@example.com"></div>
+        <div class="cell label">Emergency Contact</div><div class="cell"><input id="profile_emergency" type="text" placeholder="Name & phone"></div>
+      </div>
+
+      <div class="grid">
+        <div class="cell label">Medical History & Conditions</div><div class="cell"><textarea id="profile_medical" placeholder="e.g., asthma, hypertension, surgeries"></textarea></div>
+        <div class="cell label">Medications & Supplements</div><div class="cell"><textarea id="profile_meds" placeholder="List all current meds/supps"></textarea></div>
+        <div class="cell label">Injuries & Physical Limitations</div><div class="cell"><textarea id="profile_injuries" placeholder="e.g., lower back pain, shoulder impingement"></textarea></div>
+        <div class="cell label">Fitness Experience Level</div>
+        <div class="cell">
+          <select id="profile_experience">
+            <option value="">Select…</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+        </div>
+        <div class="cell label">Lifestyle — Job Type</div><div class="cell"><input id="profile_job" type="text" placeholder="e.g., desk-based, manual labour"></div>
+        <div class="cell label">Lifestyle — Stress Level</div>
+        <div class="cell">
+          <select id="profile_stress">
+            <option value="">Select…</option>
+            <option>Low</option>
+            <option>Moderate</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div class="cell label">Sleep Quality</div>
+        <div class="cell">
+          <select id="profile_sleep_quality">
+            <option value="">Select…</option>
+            <option>Poor</option>
+            <option>Fair</option>
+            <option>Good</option>
+            <option>Excellent</option>
+          </select>
+        </div>
+        <div class="cell label">Sleep Hours (avg)</div><div class="cell"><input id="profile_sleep_hours" type="number" min="0" step="0.5" placeholder="e.g., 7.5"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Initial Assessment</h3>
+      <div class="grid">
+        <div class="cell label">Fitness Goals — Primary</div><div class="cell"><textarea id="profile_goal_primary" placeholder="Main objective"></textarea></div>
+        <div class="cell label">Fitness Goals — Secondary</div><div class="cell"><textarea id="profile_goal_secondary" placeholder="Additional objectives"></textarea></div>
+
+        <div class="cell label">Timeline — Start Date</div><div class="cell"><input id="profile_start_date" type="date"></div>
+        <div class="cell label">Timeline — Target Date</div><div class="cell"><input id="profile_target_date" type="date"></div>
+
+        <div class="cell label">Motivation Level</div>
+        <div class="cell">
+          <select id="profile_motivation">
+            <option value="">Select…</option>
+            <option>Low</option>
+            <option>Moderate</option>
+            <option>High</option>
+            <option>Very High</option>
+          </select>
+        </div>
+
+        <div class="cell label">Barriers</div><div class="cell"><textarea id="profile_barriers" placeholder="e.g., time, injury, confidence"></textarea></div>
+
+        <div class="cell label">Preferred Exercise Types</div><div class="cell"><textarea id="profile_preferred" placeholder="e.g., weights, HIIT, running, classes"></textarea></div>
+      </div>
+    </div>
+  </section>
+
   <div class="export-buttons" style="text-align:center;padding:16px">
     <button class="btn" style="border-color:#217346" onclick="exportDataEmail('')">📧 Export & Email</button>
   </div>
@@ -267,7 +356,7 @@
 (()=>{
   const $ = id => document.getElementById(id);
   const N = v => (v===''||v==null)?0:(isFinite(+v)?+v:0);
-  const LS = 'elevate_tracker_full_v1';
+  const LS = 'elevate_tracker_full_v2';
 
   // -------- Tabs ----------
   const tabbar = document.getElementById('tabbar');
@@ -292,7 +381,7 @@
   // -------- Persistence ----------
   function save(){
     const data={};
-    document.querySelectorAll('input,select').forEach(el=>{ if(el.id) data[el.id]=el.value; });
+    document.querySelectorAll('input,select,textarea').forEach(el=>{ if(el.id) data[el.id]=el.value; });
     localStorage.setItem(LS, JSON.stringify(data));
   }
   function load(){
@@ -300,10 +389,10 @@
     Object.keys(data).forEach(k=>{ const el=$(k); if(el) el.value=data[k]; });
   }
 
-  // -------- Sync groups (shared fields across tabs) ----------
+  // -------- Sync groups (shared fields across tabs, including profile) ----------
   const syncGroups={
-    age:['bmr_age'],
-    gender:['bmr_gender'],
+    age:['bmr_age','profile_age'],
+    gender:['bmr_gender','profile_gender'],
     height:['bmr_height','bmi_height'],
     weight:['bmr_weight','bmi_weight','bc_weight']
   };
@@ -344,7 +433,7 @@
     }
   };
 
-  // Custom legend with live percentages
+  // Legend with live percentages
   function setLegendPercents(chart){
     const ds = chart.data.datasets[0];
     chart.options.plugins.legend.labels.generateLabels = (chart) => {
@@ -371,7 +460,9 @@
 
   function recalc(){
     // BMR inputs
-    const age=N(($('bmr_age')||{}).value), gender=(($('bmr_gender')||{}).value)||'male', h=N(($('bmr_height')||{}).value), w=N(($('bmr_weight')||{}).value);
+    const age=N(($('bmr_age')||{}).value) || N(($('profile_age')||{}).value);
+    const gender=(($('bmr_gender')||{}).value)||(($('profile_gender')||{}).value)||'male';
+    const h=N(($('bmr_height')||{}).value), w=N(($('bmr_weight')||{}).value);
     const act=N(($('bmr_activity')||{}).value)||1.55, adj=N(($('bmr_adjust')||{}).value)||0;
 
     // BMR/TDEE/Target
@@ -380,44 +471,36 @@
     const target = Math.max(0, tdee + adj);
 
     // Show in BMR grid + cards
-    $('bmr_out').textContent=bmr;
-    $('bmr_tdee').textContent=tdee;
-    $('bmr_target').textContent=target;
-    $('mc_bmr').textContent=bmr;
-    $('mc_tdee').textContent=tdee;
-    $('mc_target').textContent=target;
+    const setTxt=(id,val)=>{ const el=$(id); if(el) el.textContent=val; };
+    setTxt('bmr_out', bmr); setTxt('bmr_tdee', tdee); setTxt('bmr_target', target);
+    setTxt('mc_bmr', bmr); setTxt('mc_tdee', tdee); setTxt('mc_target', target);
     localStorage.setItem('targetCals', target);
 
     // BMI (fallback to BMR inputs if empty)
     const bh=N(($('bmi_height')||{}).value || h), bw=N(($('bmi_weight')||{}).value || w);
     const bmi = bh ? (bw/Math.pow(bh/100,2)) : 0;
-    $('bmi_out').textContent= bmi ? bmi.toFixed(1) : '0';
-    $('bmi_cat').textContent= bmi ? (bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese') : '—';
+    setTxt('bmi_out', bmi ? bmi.toFixed(1) : '0');
+    setTxt('bmi_cat', bmi ? (bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese') : '—');
 
     // Body Comp
     const bcw=N(($('bc_weight')||{}).value || w), bf=N(($('bc_bf')||{}).value || 0);
     const lean = bcw*(1-(bf/100||0));
-    $('bc_lean').textContent = lean ? lean.toFixed(1) : '0';
-    $('bc_fat').textContent = (bcw-(lean||0)) ? (bcw-(lean||0)).toFixed(1) : '0';
+    setTxt('bc_lean', lean ? lean.toFixed(1) : '0');
+    setTxt('bc_fat', (bcw-(lean||0)) ? (bcw-(lean||0)).toFixed(1) : '0');
 
-    // Macros (Option B: Protein + Fat editable, Carbs remainder to 100)
+    // Macros (Protein + Fat editable, Carbs = 100 - (P+F))
     let pPct=N(($('pPct')||{}).value)||0, fPct=N(($('fPct')||{}).value)||0;
     if(pPct<0) pPct=0; if(fPct<0) fPct=0;
     let cPct = 100 - (pPct + fPct);
-    if(cPct<0){
-      // clamp: reduce fat to make space, then set carbs to 0
-      fPct = Math.max(0, fPct + cPct);
-      cPct = 0;
-      $('fPct').value = Math.round(fPct);
-    }
-    $('cPct').value = Math.round(cPct);
-    $('pPct').value = Math.round(pPct);
+    if(cPct<0){ fPct = Math.max(0, fPct + cPct); cPct = 0; if($('fPct')) $('fPct').value = Math.round(fPct); }
+    if($('cPct')) $('cPct').value = Math.round(cPct);
+    if($('pPct')) $('pPct').value = Math.round(pPct);
 
     // calories + grams from target
     const pcals=target*(pPct/100), ccals=target*(cPct/100), fcals=target*(fPct/100);
     const pG=pcals/4, cG=ccals/4, fG=fcals/9;
-    $('pCals').textContent=Math.round(pcals); $('cCals').textContent=Math.round(ccals); $('fCals').textContent=Math.round(fcals);
-    $('pGr').textContent=Math.round(pG); $('cGr').textContent=Math.round(cG); $('fGr').textContent=Math.round(fG);
+    setTxt('pCals', Math.round(pcals)); setTxt('cCals', Math.round(ccals)); setTxt('fCals', Math.round(fcals));
+    setTxt('pGr', Math.round(pG)); setTxt('cGr', Math.round(cG)); setTxt('fGr', Math.round(fG));
 
     // Macro pie chart
     const mctx = document.getElementById('macroChart')?.getContext('2d');
@@ -440,10 +523,10 @@
 
     // Meal splits (25/30/30/15 of target calories)
     const S={b:.25,l:.30,d:.30,s:.15}, R=x=>Math.round(x);
-    $('m1P').textContent=R(pG*S.b); $('m2P').textContent=R(pG*S.l); $('m3P').textContent=R(pG*S.d); $('sP').textContent=R(pG*S.s);
-    $('m1C').textContent=R(cG*S.b); $('m2C').textContent=R(cG*S.l); $('m3C').textContent=R(cG*S.d); $('sC').textContent=R(cG*S.s);
-    $('m1F').textContent=R(fG*S.b); $('m2F').textContent=R(fG*S.l); $('m3F').textContent=R(fG*S.d); $('sF').textContent=R(fG*S.s);
-    $('m1K').textContent=R(target*S.b); $('m2K').textContent=R(target*S.l); $('m3K').textContent=R(target*S.d); $('sK').textContent=R(target*S.s);
+    setTxt('m1P', R(pG*S.b)); setTxt('m2P', R(pG*S.l)); setTxt('m3P', R(pG*S.d)); setTxt('sP', R(pG*S.s));
+    setTxt('m1C', R(cG*S.b)); setTxt('m2C', R(cG*S.l)); setTxt('m3C', R(cG*S.d)); setTxt('sC', R(cG*S.s));
+    setTxt('m1F', R(fG*S.b)); setTxt('m2F', R(fG*S.l)); setTxt('m3F', R(fG*S.d)); setTxt('sF', R(fG*S.s));
+    setTxt('m1K', R(target*S.b)); setTxt('m2K', R(target*S.l)); setTxt('m3K', R(target*S.d)); setTxt('sK', R(target*S.s));
 
     // Meal stacked bars by kcal
     const labels=['Breakfast','Lunch','Dinner','Snacks'];
@@ -485,22 +568,16 @@
     const dw=$('diffW'); if(dw) dw.textContent=(tarW&&curW)?(tarW-curW).toFixed(1):'0';
     const dbf=$('diffBF'); if(dbf) dbf.textContent=(tarBF&&curBF)?(tarBF-curBF).toFixed(1):'0';
 
-    // Progress weight chart (from local history)
-    renderLogs(); // ensures chart sync too
+    // Refresh weight log chart
+    renderLogs();
   }
 
   // -------- Weight log (local) & chart --------
   let weightLogs = [];
   const logTable = document.getElementById('logTable');
   const pctx=document.getElementById('progressChart')?.getContext('2d');
-  let progressChartInit=false;
-
-  function getLogs(){
-    try{ return JSON.parse(localStorage.getItem('weightLog')||'[]'); }catch(e){ return []; }
-  }
-  function setLogs(logs){
-    localStorage.setItem('weightLog', JSON.stringify(logs));
-  }
+  function getLogs(){ try{ return JSON.parse(localStorage.getItem('weightLog')||'[]'); }catch(e){ return []; } }
+  function setLogs(logs){ localStorage.setItem('weightLog', JSON.stringify(logs)); }
   function renderLogs(){
     weightLogs = getLogs();
     if(logTable){
@@ -513,19 +590,16 @@
     }
     const labels = weightLogs.map(e=>e.date);
     const data = weightLogs.map(e=>+e.weight);
-    if(pctx){
-      if(!progressChart){
-        progressChart = new Chart(pctx,{type:'line',
-          data:{labels,datasets:[{label:'Weight (kg)',data,borderColor:'#004d40',tension:0.2,fill:false}]},
-          options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:false}}}});
-      }else{
-        progressChart.data.labels = labels;
-        progressChart.data.datasets[0].data = data;
-        progressChart.update();
-      }
+    if(!window.progressChart && pctx){
+      window.progressChart = new Chart(pctx,{type:'line',
+        data:{labels,datasets:[{label:'Weight (kg)',data,borderColor:'#004d40',tension:0.2,fill:false}]},
+        options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:false}}}});
+    }else if(window.progressChart){
+      window.progressChart.data.labels = labels;
+      window.progressChart.data.datasets[0].data = data;
+      window.progressChart.update();
     }
   }
-
   const addLogBtn = document.getElementById('addLog');
   if(addLogBtn){
     addLogBtn.addEventListener('click', ()=>{
@@ -533,10 +607,8 @@
       const w = document.getElementById('logWeight').value;
       if(!w) return;
       let logs = getLogs();
-      // overwrite if same date exists
       logs = logs.filter(e=>e.date!==d);
       logs.push({date:d, weight:w});
-      // sort by date ascending
       logs.sort((a,b)=>a.date.localeCompare(b.date));
       setLogs(logs);
       renderLogs();
@@ -548,6 +620,14 @@
     const lines=[];
     lines.push('Elevate Tracker Export');
     lines.push(new Date().toLocaleString());
+    lines.push('');
+
+    // Profile summary (optional)
+    const fname = document.getElementById('profile_fullname')?.value || '';
+    if(fname){ lines.push('Client: ' + fname); }
+    const phone = document.getElementById('profile_phone')?.value || '';
+    const email = document.getElementById('profile_email')?.value || '';
+    if(phone||email) lines.push('Contact: ' + [phone,email].filter(Boolean).join(' | '));
     lines.push('');
 
     // BMR/TDEE/Target
@@ -589,12 +669,8 @@
 
     // Weight Log
     lines.push('Weight Log:');
-    const logs = getLogs();
-    if(logs.length){
-      logs.forEach(e=>lines.push(`${e.date} — ${e.weight} kg`));
-    }else{
-      lines.push('(no entries)');
-    }
+    const logs = (function(){ try{return JSON.parse(localStorage.getItem('weightLog')||'[]')}catch(e){return[]} })();
+    if(logs.length){ logs.forEach(e=>lines.push(`${e.date} — ${e.weight} kg`)); } else { lines.push('(no entries)'); }
 
     const subject='Elevate Tracker Export';
     const body=lines.join('\n');
@@ -604,7 +680,7 @@
 
   // Listeners
   document.addEventListener('input', (e)=>{
-    if(!e.target.matches('input,select')) return;
+    if(!e.target.matches('input,select,textarea')) return;
     syncField(e.target.id);
     recalc();
     save();
